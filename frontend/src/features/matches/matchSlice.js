@@ -1,0 +1,135 @@
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import matchService from './matchService'
+
+const initialState = {
+  matches: [],
+  isError: false,
+  isSuccess: false,
+  isLoading: false,
+  message: '',
+}
+
+// Get user events
+export const getMatch = createAsyncThunk(
+  'match/getAll',
+  async (_, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token
+      return await matchService.getMatch(token)
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString()
+      return thunkAPI.rejectWithValue(message)
+    }
+  }
+)
+
+
+// Create new match
+export const createMatch = createAsyncThunk(
+  'match/create',
+  async (matchData, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token
+      return await matchService.createMatch(matchData, token)
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString()
+      return thunkAPI.rejectWithValue(message)
+    }
+  }
+)
+
+export const updateEvent = createAsyncThunk(
+  'match/update',
+  async (data, thunkAPI) => {
+    try {
+      const state = thunkAPI.getState();
+      const token = state.auth.user.token;
+      const eventId = data.matchId; // Assuming you pass the eventId as part of the data parameter
+      const matchData = {
+        ...data.matchData, // Assuming you pass other event data fields in eventData
+      };
+
+      return await matchService.updateEvent(eventId, matchData, token);
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+
+
+
+export const matchSlice = createSlice({
+  name: 'match',
+  initialState,
+  reducers: {
+    reset: (state) => initialState,
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(createMatch.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(createMatch.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        state.events.push(action.payload)
+      })
+      .addCase(createMatch.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
+      .addCase(updateEvent.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(updateEvent.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        // Find the index of the existing event in the array
+        const index = state.events.findIndex((event) => event._id === action.payload._id)
+        if (index !== -1) {
+          // Replace the existing event with the updated event
+          state.events[index] = action.payload
+        }
+      })
+      .addCase(updateEvent.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
+      .addCase(getMatch.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(getMatch.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        state.events = action.payload
+      })
+      .addCase(getMatch.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
+
+  },
+})
+
+export const { reset } = matchSlice.actions
+export default matchSlice.reducer
