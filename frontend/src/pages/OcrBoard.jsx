@@ -7,8 +7,8 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 import ImageUploader from "../components/ImageUploader";
-import TextRecognition from "../components/TextRecognition";
-import MatchForm from "../components/MatchForm.jsx";
+// import TextRecognition from "../components/TextRecognition";
+import MatchForm from "../components/matchForm.jsx";
 
 
 

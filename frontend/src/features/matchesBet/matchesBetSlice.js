@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import matchesBetService from './matchesBetService'
 
 const initialState = {
-  matches: [],
+  matchBets: [],
   isError: false,
   isSuccess: false,
   isLoading: false,
@@ -89,7 +89,7 @@ export const matchesBetSlice = createSlice({
       .addCase(createMatchesBet.fulfilled, (state, action) => {
         state.isLoading = false
         state.isSuccess = true
-        state.events.push(action.payload)
+        state.matchBets.push(action.payload)
       })
       .addCase(createMatchesBet.rejected, (state, action) => {
         state.isLoading = false
@@ -103,10 +103,10 @@ export const matchesBetSlice = createSlice({
         state.isLoading = false
         state.isSuccess = true
         // Find the index of the existing event in the array
-        const index = state.events.findIndex((event) => event._id === action.payload._id)
+        const index = state.matchBets.findIndex((event) => event._id === action.payload._id)
         if (index !== -1) {
           // Replace the existing event with the updated event
-          state.events[index] = action.payload
+          state.matchBets[index] = action.payload
         }
       })
       .addCase(updateEvent.rejected, (state, action) => {
@@ -120,7 +120,7 @@ export const matchesBetSlice = createSlice({
       .addCase(getMatchesBet.fulfilled, (state, action) => {
         state.isLoading = false
         state.isSuccess = true
-        state.events = action.payload
+        state.matchBets = action.payload
       })
       .addCase(getMatchesBet.rejected, (state, action) => {
         state.isLoading = false

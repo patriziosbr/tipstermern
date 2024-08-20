@@ -8,8 +8,8 @@ const User = require("../model/userModel")
 //@access Private
 const getMatchesBet = asyncHandler(async (req, res) => {
     // const event = await Event.find({user: req.user.id})
-    const event = await MatchesBet.find()
-    res.status(200).json(event)
+    const matchBets = await MatchesBet.find()
+    res.status(200).json(matchBets)
 })
 
 //@desc set match
@@ -25,12 +25,12 @@ const setMatchesBet = asyncHandler(async (req, res) => {
     }
 
     // Create a new MatchesBet record
-    const matchesBet = await MatchesBet.create({
+    const matchBets = await MatchesBet.create({
         user: req.user.id,
         matches: matches, // Will be filled after match creation
     });
 
-    res.status(200).json(matchesBet);
+    res.status(200).json(matchBets);
 });
 
 //@desc update Goals

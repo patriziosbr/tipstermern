@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Tesseract from 'tesseract.js';
 import { useDispatch } from 'react-redux';
 import { createMatch } from '../features/matches/matchSlice';
-import { createMatchesBet } from '../features/matchesBet/matchedBetSlice';
+import { createMatchesBet } from '../features/matchesBet/matchesBetSlice';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -13,7 +13,6 @@ import {retext} from 'retext';
 import pos from 'retext-pos';
 import keywords from 'retext-keywords';
 import {toString} from 'nlcst-to-string';
-import MatchForm from './MatchForm';
 
 const TextRecognition = ({ selectedImage, keyWordAndPhrases }) => {
   const [recognizedText, setRecognizedText] = useState('');

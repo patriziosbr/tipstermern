@@ -9,8 +9,8 @@ const User = require("../model/userModel")
 //@access Private
 const getMatch = asyncHandler(async (req, res) => {
     // const event = await Event.find({user: req.user.id})
-    const event = await Match.find()
-    res.status(200).json(event)
+    const matches = await Match.find()
+    res.status(200).json(matches)
 })
 
 //@desc set match

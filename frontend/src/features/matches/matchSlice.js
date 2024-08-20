@@ -89,7 +89,7 @@ export const matchSlice = createSlice({
       .addCase(createMatch.fulfilled, (state, action) => {
         state.isLoading = false
         state.isSuccess = true
-        state.events.push(action.payload)
+        state.matches.push(action.payload)
       })
       .addCase(createMatch.rejected, (state, action) => {
         state.isLoading = false
@@ -103,10 +103,10 @@ export const matchSlice = createSlice({
         state.isLoading = false
         state.isSuccess = true
         // Find the index of the existing event in the array
-        const index = state.events.findIndex((event) => event._id === action.payload._id)
+        const index = state.matches.findIndex((event) => event._id === action.payload._id)
         if (index !== -1) {
           // Replace the existing event with the updated event
-          state.events[index] = action.payload
+          state.matches[index] = action.payload
         }
       })
       .addCase(updateEvent.rejected, (state, action) => {
@@ -120,7 +120,7 @@ export const matchSlice = createSlice({
       .addCase(getMatch.fulfilled, (state, action) => {
         state.isLoading = false
         state.isSuccess = true
-        state.events = action.payload
+        state.matches = action.payload
       })
       .addCase(getMatch.rejected, (state, action) => {
         state.isLoading = false

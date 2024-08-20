@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Tesseract from 'tesseract.js';
 import { useDispatch } from 'react-redux';
 import { createMatch } from '../features/matches/matchSlice';
-import { createMatchesBet } from '../features/matchesBet/matchedBetSlice';
+import { createMatchesBet } from '../features/matchesBet/matchesBetSlice';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -199,7 +199,7 @@ const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
   return (
     <div>
       <Form className="mb-3" onSubmit={onSubmit}>
-       {matchCount > 0 && 
+       {recognizedText && 
        <>
         <h6>Match found: {matchCount}</h6>
         <Form.Group className="mb-3" controlId={`test`}>
