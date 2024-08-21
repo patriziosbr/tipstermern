@@ -83,6 +83,7 @@ const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
     setFormData(initialState);
     setFormBlocks(Array.from({ length: totalMatches }, (_, index) => ({ index })));
     setMatchCount(totalMatches);
+    validateForm(initialState)
 };
   
   const processText = (text) => {
@@ -108,14 +109,26 @@ const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
   };
 
   const deleteBlock = (matchIndex) => {
+    // Remove the block
     setFormBlocks((prevBlocks) => {
       const updatedBlocks = prevBlocks.filter((_, index) => index !== matchIndex);
 
+      // Clear values of the deleted block from formData
+      const updatedFormData = { ...formData };
+      Object.keys(formData).forEach(key => {
+        if (key.endsWith(`${matchIndex}`)) {
+          delete updatedFormData[key];
+        }
+      });
+
+      setFormData(updatedFormData); // Update formData state
+
+      // Update indices of remaining blocks
       return updatedBlocks.map((block, index) => ({
         ...block,
         index: index, // Ensure the index is sequential
       }));
-    });    
+    });
   };
 
   const formattedDate = (dateStr)=>{
@@ -134,29 +147,69 @@ const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
   }
 
   const validateForm = (data) => {
-    const errors = {};
+    console.log(data, "validateForm");
     
+    let errors = {};
+
+  // Handle case where `data` is empty
+  if (Object.keys(data).length === 0) {
+    // Create errors for each block
+    for (let index = 0; index < formBlocks.length; index++) {
+      errors[`matchDate${index}`] = "matchDate is required";
+      errors[`homeTeam${index}`] = "homeTeam is required";
+      errors[`awayTeam${index}`] = "awayTeam is required";
+      errors[`typeOfBet${index}`] = "typeOfBet is required";
+      errors[`typeOfBet_choice${index}`] = "typeOfBet_choice is required";
+      errors[`odds${index}`] = "odds is required";
+    }
+    setErrors(errors);
+    return errors;
+  }
+
     for (const key in data) {
       if (Object.prototype.hasOwnProperty.call(data, key)) {
         const element = data[key];
-        // console.log(key, "key");
-        // console.log(element, "val");
+        console.log(key, "key");
+        console.log(element, "val");
         if (!element.trim()) {
           errors[key] = `${key} is required`;
         }
+      } else {
+        console.error("Error in validateForm");
       }
     }
     setErrors(errors)
     
     return errors;
-};
+  };
+
+
+  const filteredOptions = [
+    { value: { nameTips: "Tipster1", id: "1" }, option: "Tipster1" },
+    { value: { nameTips: "Tipster2", id: "2" }, option: "Tipster2" },
+    { value: { nameTips: "Tipster3", id: "3" }, option: "Tipster3" }
+  ];
+  
+
+  let renderOptions = () => {
+    return filteredOptions.map((option, index) => {
+      return (
+        <option key={index} value={option.value.nameTips}>
+          {option.option}
+        </option>
+      );
+    });
+  };
 
 
   const onSubmit = async (e) => {
     e.preventDefault()
     console.log( formData, "formData");
     const newErrors = validateForm(formData);
+    console.log(newErrors, "newErrors");
+    
     setErrors(newErrors);
+
 
     if (Object.keys(newErrors).length === 0) {
       console.log('Form submitted successfully!');
@@ -165,9 +218,13 @@ const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
     }
     
     const matchesArray = [];
-    const totalMatches = Object.keys(formData).length / 7; // 7 fields per match
-    
+    const totalMatches = Object.keys(formData).length / 8; // 8 fields per match
+
     for (let i = 0; i < totalMatches; i++) {
+      // Find the corresponding tipster object
+      const tipsterOption = formData[`tipster${i}`];
+      const tipsterObject = filteredOptions.find(option => option.value.nameTips === tipsterOption);
+
       matchesArray.push({
         matchDate: formData[`matchDate${i}`],
         league: formData[`league${i}`],
@@ -176,7 +233,7 @@ const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
         typeOfBet: formData[`typeOfBet${i}`],
         typeOfBet_choice: formData[`typeOfBet_choice${i}`],
         odds: formData[`odds${i}`],
-        tipster: null,
+        tipster: tipsterObject ? tipsterObject.value : {value: { nameTips: formData[`tipster${i}`], id: "" }, option: formData[`tipster${i}`]},
         matchWin: null,
         recognizedText : recognizedText, 
       });
@@ -213,6 +270,18 @@ const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
       {formBlocks && formBlocks.map((block) => (
         <div key={block.index}>
           <h6>Giocata: {block.index + 1} <span className='text-danger'><FaRegTrashAlt onClick={()=>deleteBlock(block.index)} /></span></h6> 
+          <Form.Group className="mb-3" style={{ width: '100%' }}>
+            <Form.Label>Tipster</Form.Label>
+            <Form.Control
+              type="text"
+              name={`tipster${block.index}`}
+              value={formData[`tipster${block.index}`] || ''}
+              onChange={onChange}
+              className={ errors[`tipster${block.index}`] ? 'border-danger' : "" } 
+              list={`tipster${block.index}`}
+            />
+            <datalist id={`tipster${block.index}`}>{renderOptions()}</datalist>
+          </Form.Group>
           <div style={{ display: 'flex' }}>
             <Form.Group className="mb-3 me-2" controlId={`formBasicEmail${block.index}`} style={{ width: '50%' }}>
               <Form.Label>Giorno evento</Form.Label>
