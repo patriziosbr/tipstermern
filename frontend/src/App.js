@@ -11,7 +11,7 @@ import EventDashboard from './pages/EventDashboard'
 import CalendarTest from './pages/CalendarTest'
 import FoodFormDashboard from './pages/FoodFormDashboard'
 import OcrBoard from './pages/OcrBoard'
-import TipsterAnalysis from './pages/TipsterAnalysis'
+import UserBetAnalysis from './pages/UserBetAnalysis'
 
 function App() {
   return (
@@ -29,7 +29,7 @@ function App() {
             {/* <Route exact path='/CalendarTest' element={<CalendarTest />} /> */}
             <Route exact path='/foodformdashboard' element={<FoodFormDashboard />} />
             <Route exact path='/ocrboard' element={<OcrBoard />} />
-            <Route exact path='/tipsteranalysis' element={<TipsterAnalysis />} />
+            <Route exact path='/UserBetAnalysis' element={<UserBetAnalysis />} />
           </Routes>
         </div>
       </Router>

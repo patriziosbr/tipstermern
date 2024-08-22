@@ -7,8 +7,9 @@ import Col from 'react-bootstrap/Col';
 import { getMatchBets, reset } from '../features/matchesBet/matchesBetSlice';
 import { getMatch } from '../features/matches/matchSlice';
 import Spinner from '../components/Spinner';
+import SingleMatch from '../components/SingleMatch';
 
-const TipsterAnalysis = () => {
+const UserBetAnalysis = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -48,30 +49,22 @@ const TipsterAnalysis = () => {
       // Ensure matchBet.matches is an array
       const matchIds = Array.isArray(matchBet.matches) ? matchBet.matches : [];
       return matchesData.filter(match => matchIds.includes(match._id));
-  };
+    };
 
     return (
         <>
-            {console.log(matchBets, "matchBets")}
-            {console.log(matchesData, "matchesData")}
             <Container style={{ marginTop: "80px" }}>
                 <Row>
                     <Col xs={12}>
                         <h2>Analisi giocate</h2>
                         {matchBets.length > 0 ? matchBets.map((matchBet, index) => (
-                            <div key={matchBet._id}>
+                            <div key={matchBet._id} className="p-3 mb-5 border border-light shadow-sm bg-white rounded">
                                 <h4>Giocata {index + 1}</h4>
+                                
                                 {getRelatedMatches(matchBet).length > 0 ? (
-                                    getRelatedMatches(matchBet).map((match) => (
-                                        <div key={match._id}>
-                                            <p><strong>Match ID:</strong> {match._id}</p>
-                                            <p><strong>Date:</strong> {match.dateMatch}</p>
-                                            <p><strong>Home Team:</strong> {match.homeTeam}</p>
-                                            <p><strong>Away Team:</strong> {match.awayTeam}</p>
-                                            <p><strong>League:</strong> {match.league}</p>
-                                            <p><strong>Odds:</strong> {match.odds}</p>
-                                            <p><strong>Type of Bet:</strong> {match.typeOfBet}</p>
-                                            <p><strong>Bet Choice:</strong> {match.typeOfBet_choice}</p>
+                                    getRelatedMatches(matchBet).map((match, index) => (
+                                        <div key={match._id} className={index !== getRelatedMatches(matchBet).length - 1 ? "border-bottom pb-3 mb-3" : "pb-3"} >
+                                            <SingleMatch dateMatch={match.dateMatch} homeTeam={match.homeTeam} awayTeam={match.awayTeam} league={match.league} odds={match.odds} typeOfBet={match.typeOfBet} typeOfBet_choice={match.typeOfBet_choice}/>
                                         </div>
                                     ))
                                 ) : (
@@ -88,4 +81,4 @@ const TipsterAnalysis = () => {
     );
 };
 
-export default TipsterAnalysis;
+export default UserBetAnalysis;
