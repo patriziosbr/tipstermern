@@ -20,12 +20,6 @@ import { BsDashCircle } from "react-icons/bs";
 import { BsXCircle } from "react-icons/bs";
 
 
-
-
-
-
-
-
 const SingleMatch = ({dateMatch, homeTeam, awayTeam, league, odds, typeOfBet, typeOfBet_choice}) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
