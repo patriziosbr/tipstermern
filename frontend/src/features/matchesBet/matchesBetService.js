@@ -32,6 +32,19 @@ const createMatchesBet = async (matchData, token) => {
 
   return response.data
 }
+
+// Delete user goal
+const deleteMatchesBet = async (matchBetId, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+
+  const response = await axios.delete(API_URL + matchBetId, config)
+
+  return response.data
+}
 // Update events
 // const updateMatch = async (matchId, matchData, token) => {
 //   const config = {
@@ -51,6 +64,7 @@ const matchesBetService = {
   createMatchesBet,
   // updateMatch,
   getMatchesBet,
+  deleteMatchesBet
 }
 
 export default matchesBetService

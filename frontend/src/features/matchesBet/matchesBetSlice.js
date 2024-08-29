@@ -40,6 +40,25 @@ export const createMatchesBet = createAsyncThunk(
   }
 );
 
+// Delete matchBet goal
+export const deleteMatchesBet = createAsyncThunk(
+  'matchBets/delete',
+  async (id, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token
+      return await matchesBetService.deleteMatchesBet(id, token)
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString()
+      return thunkAPI.rejectWithValue(message)
+    }
+  }
+)
+
 // Update match bet
 export const updateMatchBet = createAsyncThunk(
   'matchBets/update',
@@ -106,7 +125,23 @@ const matchesBetSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
-      });
+      })
+      .addCase(deleteMatchesBet.pending, (state) => {
+        state.isLoading = true
+      })
+      .addCase(deleteMatchesBet.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.isSuccess = true
+        state.matchBets = state.matchBets.filter(
+          (matchBet) => matchBet._id !== action.payload.id
+        )
+      })
+      .addCase(deleteMatchesBet.rejected, (state, action) => {
+        state.isLoading = false
+        state.isError = true
+        state.message = action.payload
+      })
+      ;
   },
 });
 

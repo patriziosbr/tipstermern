@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import { getMatch, reset  } from '../features/matches/matchSlice';
-import Spinner from '../components/Spinner';
+import React, { useEffect } from 'react';
+// import { useNavigate } from 'react-router-dom'
+// import { useSelector, useDispatch } from 'react-redux'
+// // import Container from 'react-bootstrap/Container';
+// // import Row from 'react-bootstrap/Row';
+// // import Col from 'react-bootstrap/Col';
+// import { getMatch, reset  } from '../features/matches/matchSlice';
+// import Spinner from '../components/Spinner';
 
-import Button from 'react-bootstrap/Button';
+// // import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 
 // ICONE FILL CON FONDO NERO/PIENO
@@ -15,37 +15,13 @@ import Card from 'react-bootstrap/Card';
 // import { BsFillXCircleFill } from "react-icons/bs";
 // import { BsCheckCircleFill } from "react-icons/bs";
 
-import { BsCheckCircle } from "react-icons/bs";
-import { BsDashCircle } from "react-icons/bs";
-import { BsXCircle } from "react-icons/bs";
+// import { BsCheckCircle } from "react-icons/bs";
+// import { BsDashCircle } from "react-icons/bs";
+// import { BsXCircle } from "react-icons/bs";
 
 
 const SingleMatch = ({dateMatch, homeTeam, awayTeam, league, odds, typeOfBet, typeOfBet_choice, matchWin}) => {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
 
-    const { user } = useSelector((state) => state.auth);
-    const { matches, isLoading, isError, message } = useSelector((state) => state.matches);
-
-    useEffect(() => {
-        if (isError) {
-            console.log(message, "message");
-        }
-
-        if (!user) {
-            navigate('/login');
-        }
-
-        dispatch(getMatch())
-        
-        return () => {
-            dispatch(reset());
-        };
-    }, [user, navigate, isError, message, dispatch]);
-
-    if (isLoading) {
-        return <Spinner />;
-    }
 
     const isoToDateFormatter = (paramDate) => {
         let date = new Date(paramDate);
@@ -72,9 +48,9 @@ const SingleMatch = ({dateMatch, homeTeam, awayTeam, league, odds, typeOfBet, ty
 
             <div style={{ display:'flex' }}>
                 <div style={{ width: '30px' }} className='d-flex align-items-center'>
-                    {matchWin === true && <div style={{borderRadius:"100%", backgroundColor:"green", height:"15px", width:"15px"}}></div>}
-                    {matchWin === false && <div style={{borderRadius:"100%", backgroundColor:"red", height:"15px", width:"15px"}}></div>}
-                    {matchWin === null && <div style={{borderRadius:"100%", backgroundColor:"yellow", height:"15px", width:"15px"}}></div>}
+                    {matchWin === 1 && <div style={{borderRadius:"100%", backgroundColor:"green", height:"15px", width:"15px"}}></div>}
+                    {matchWin === 0 && <div style={{borderRadius:"100%", backgroundColor:"red", height:"15px", width:"15px"}}></div>}
+                    {matchWin === 2  && <div style={{borderRadius:"100%", backgroundColor:"yellow", height:"15px", width:"15px"}}></div>}
                     {/* {matchWin === true && <BsDashCircle size='30'/>}
                     {matchWin === false && <BsXCircle size='30' />}
                     {matchWin === null && <BsCheckCircle size='30' />} */}

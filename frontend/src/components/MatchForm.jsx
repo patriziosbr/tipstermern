@@ -33,7 +33,7 @@ const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
       acc[`typeOfBet${index}`] = match.typeOfBet || '';
       acc[`typeOfBet_choice${index}`] = match.typeOfBet_choice || '';
       acc[`odds${index}`] = match.odds || '';
-      acc[`matchWin${index}`] = match.matchWin || null;
+      acc[`matchWin${index}`] = match.matchWin ?? 2;
       acc[`betPaid`] = match.betPaid || 1;
       return acc;
     }, {});
@@ -81,7 +81,7 @@ const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
       [`typeOfBet${index}`]: '',
       [`typeOfBet_choice${index}`]: '',
       [`odds${index}`]: '',
-      [`matchWin${index}`]: null,
+      [`matchWin${index}`]: 2,
       [`betPaid`]: 1
     })).reduce((acc, match) => ({ ...acc, ...match }), {});
 
@@ -174,11 +174,16 @@ const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
     for (const key in data) {
       if (Object.prototype.hasOwnProperty.call(data, key)) {
         const element = data[key];
-        // console.log(key, "key");
-        // console.log(element, "val");
-        if (!element.trim()) {
+        console.log(key, "key");
+        console.log(element, "val");
+
+        if (typeof element === "string" && !element.trim()) {
+          console.log(`${key} is empty, marking as error`);
           errors[key] = `${key} is required`;
-        }
+      }
+        // if (!element.trim()) {
+        //   errors[key] = `${key} is required`;
+        // }
       } else {
         console.error("Error in validateForm");
       }
@@ -238,7 +243,7 @@ const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
         typeOfBet_choice: formData[`typeOfBet_choice${i}`],
         odds: formData[`odds${i}`],
         tipster: tipsterObject ? tipsterObject.value : {value: { nameTips: formData[`tipster${i}`], id: "" }, option: formData[`tipster${i}`]},
-        matchWin: formData[`matchWin${i}`],
+        matchWin: formData[`matchWin${i}`] ?? 2,
         recognizedText : recognizedText,
         betPaid: formData[`betPaid`]
       });
@@ -289,22 +294,21 @@ const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
        </>}
 
       <Button onClick={handleAddBlock}>Add Giocata</Button>
-
+      {formBlocks && formBlocks.map((block) => (
+        <div key={block.index}>
+          <h6>Giocata: {block.index + 1} <span className='text-danger'><FaRegTrashAlt onClick={()=>deleteBlock(block.index)} /></span></h6>
           <Form.Group className="mb-3" style={{ width: '100%' }}>
             <Form.Label>Tipster</Form.Label>
             <Form.Control
               type="text"
-              name={`tipster`}
-              value={formData[`tipster`] || ''}
+              name={`tipster${block.index}`}
+              value={formData[`tipster${block.index}`] || ''}
               onChange={onChange}
-              className={ errors[`tipster`] ? 'border-danger' : "" } 
-              list={`tipster`}
+              className={ errors[`tipster${block.index}`] ? 'border-danger' : "" } 
+              list={`tipster${block.index}`}
             />
-            <datalist id={`tipster`}>{renderOptions()}</datalist>
+            <datalist id={`tipster${block.index}`}>{renderOptions()}</datalist>
           </Form.Group>
-      {formBlocks && formBlocks.map((block) => (
-        <div key={block.index}>
-          <h6>Giocata: {block.index + 1} <span className='text-danger'><FaRegTrashAlt onClick={()=>deleteBlock(block.index)} /></span></h6> 
           <div style={{ display: 'flex' }}>
             <Form.Group className="mb-3 me-2" controlId={`formBasicEmail${block.index}`} style={{ width: '50%' }}>
               <Form.Label>Giorno evento</Form.Label>
@@ -392,7 +396,7 @@ const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
                   id={`matchWin${block.index}`}
                   name={`matchWin${block.index}`}
                   onChange={onChange}
-                  value={true}
+                  value={1}
                   />
               </Form.Group>
               <Form.Group className="mb-3" controlId={`formBasicEmail${block.index}`} style={{ width: '33%' }}>
@@ -402,7 +406,7 @@ const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
                   id={`matchWin${block.index}`}
                   name={`matchWin${block.index}`}
                   onChange={onChange}
-                  value={false}
+                  value={0}
                   />
               </Form.Group>
               <Form.Group className="mb-3" controlId={`formBasicEmail${block.index}`} style={{ width: '33%' }}>
@@ -412,8 +416,8 @@ const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
                   id={`matchWin${block.index}`}
                   name={`matchWin${block.index}`}
                   onChange={onChange}
-                  value={null}
-                  defaultChecked 
+                  value={2}
+                  defaultChecked={formData[`matchWin${block.index}`] === 2}
                   />
               </Form.Group>
             </div>

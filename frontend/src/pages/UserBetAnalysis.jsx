@@ -1,13 +1,14 @@
-import React, { Fragment, useEffect, useState } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ListGroup from 'react-bootstrap/ListGroup';
-import { getMatchBets, reset } from '../features/matchesBet/matchesBetSlice';
+import { getMatchBets, deleteMatchesBet,  reset } from '../features/matchesBet/matchesBetSlice';
 import Spinner from '../components/Spinner';
 import SingleMatch from '../components/SingleMatch';
+import { FaRegTrashAlt } from "react-icons/fa";
 
 const UserBetAnalysis = () => {
     const navigate = useNavigate();
@@ -32,6 +33,15 @@ const UserBetAnalysis = () => {
         };
     }, [user, navigate, isError, message, dispatch]);
 
+    const deleteRealod = async (_id) => {
+        try {
+            await dispatch(deleteMatchesBet(_id)).unwrap(); // Wait for delete to complete
+            dispatch(getMatchBets()); // Refetch the data
+        } catch (error) {
+            console.error("Error deleting match bet:", error);
+        }
+    }
+
     if (isLoading) {
         return <Spinner />;
     }
@@ -50,13 +60,18 @@ const UserBetAnalysis = () => {
                                         matches.map((match) => {
                                             const shouldDisplayTipsterName = lastTipsterName !== match.tipster.nameTips;
                                             if (shouldDisplayTipsterName) {
+
                                                 lastTipsterName = match.tipster.nameTips; // Update the last displayed tipster name
                                             }
                                             return (
                                                 <Fragment key={match._id}>
+                                                    {/* {JSON.stringify(match.tipster.value.nameTips)} */}
                                                     <div className="border-bottom pb-3 mb-3">
                                                         {shouldDisplayTipsterName && (
-                                                            <p>Name: <b><i>{match.tipster.nameTips}</i></b></p>
+                                                            <div className='d-flex justify-content-between'>
+                                                                <p>Name: <b><i>{match.tipster.nameTips || match.tipster.value.nameTips}</i></b></p>
+                                                                <span className='text-danger' style={{cursor: "pointer"}}><FaRegTrashAlt onClick={() => deleteRealod(_id)} /></span>
+                                                            </div>
                                                         )}
                                                         <SingleMatch 
                                                             dateMatch={match.dateMatch} 
@@ -81,9 +96,9 @@ const UserBetAnalysis = () => {
                                         </div>
                                     </div>
                                     <ListGroup>
-                                        <ListGroup.Item>Pagato: {betPaid}€</ListGroup.Item>
-                                        <ListGroup.Item variant="light">Vincita: {totalWin}€</ListGroup.Item>
-                                        <ListGroup.Item>Profitto: {profit}€</ListGroup.Item>
+                                        <ListGroup.Item>Pagato: {betPaid.toFixed(2)}€</ListGroup.Item>
+                                        <ListGroup.Item variant="light">Vincita: {totalWin.toFixed(2)}€</ListGroup.Item>
+                                        <ListGroup.Item>Profitto: {profit.toFixed(2)}€</ListGroup.Item>
                                     </ListGroup>
                                 </div>
                             );

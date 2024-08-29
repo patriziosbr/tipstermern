@@ -83,29 +83,38 @@ const updateEvent = asyncHandler(async (req, res) => {
     res.status(200).json(updatedEvent)
 })
 
-//@desc cancel goals
+//@desc cancel matchBet in cascade match
 //@route DELETE /api/event/:id
 //@access Private
-const deleteEvent = asyncHandler(async (req, res) => {
-    const event = await Event.findById(req.params.id);
-    if(!event) {
-        throw new Error("event not found")
+const deleteMatchesBet = asyncHandler(async (req, res) => {
+    // Find the matchBet by ID
+    const matchBet = await MatchesBet.findById(req.params.id);
+    
+    if(!matchBet) {
+        throw new Error("MatchesBet not found");
     }
 
-    //check user
+    // Check if the user is authenticated
     if(!req.user) {
-        res.status(401)
-        throw new Error("user not found")
+        res.status(401);
+        throw new Error("User not found");
     }
-    //check if user is owner
-    if(event.user.toString() !== req.user.id){
-        res.status(401)
-        throw new Error("user not authorized")
+
+    // Check if the user is the owner of the matchBet
+    if(matchBet.user.toString() !== req.user.id){
+        res.status(401);
+        throw new Error("User not authorized");
     }
-    // await Goal.findByIdAndDelete(req.params.id) //soluzione mia al volo rifaccio la query 
-    await event.deleteOne(); //remove() is not a function ??
-    res.status(200).json({id:req.params.id}) //porta in FE solo ID dell'elemento eliminato 
-})
+
+    // Cascade delete: Delete all related matches
+    await Match.deleteMany({ _id: { $in: matchBet.matches } }); 
+
+    // Delete the matchBet
+    await matchBet.deleteOne();
+
+    // Return the ID of the deleted matchBet
+    res.status(200).json({ id: req.params.id });
+});
 
 
 
@@ -113,5 +122,5 @@ module.exports = {
     getMatchesBet,
     setMatchesBet,
     // updateEvent,
-    // deleteEvent
+    deleteMatchesBet
 }

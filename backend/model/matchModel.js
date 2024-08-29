@@ -43,10 +43,10 @@ const matchSchema = mongoose.Schema(
             default: null
         },
         matchWin: {
-            type: Boolean,
+            type: Number,
             required: false,
             default: null
-        }
+        } // 0 lost - 1 win - 2 pending
         // matchesBet: {
         //     type: mongoose.Schema.Types.ObjectId,
         //     required: false,
