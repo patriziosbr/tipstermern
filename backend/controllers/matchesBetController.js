@@ -1,61 +1,22 @@
 const asyncHandler = require('express-async-handler')
 const MatchesBet = require("../model/matchesBetModel")
 const User = require("../model/userModel")
+const Match = require("../model/matchModel")
 
-
+// VERSIONE 1 PER RICORDO //porta giu le schedine con i relativi ID dei match 
 //@desc get goals
 //@route GET /api/match
 //@access Private
 // const getMatchesBet = asyncHandler(async (req, res) => {
-//     // const event = await Event.find({user: req.user.id})
-//     const matchBets = await MatchesBet.find()
-//     res.status(200).json(matchBets)
-// })
-const Match = require("../model/matchModel")
-
-//@desc Get match bets with calculated profit and loss
-//@route GET /api/match
-//@access Private
+    //     // const event = await Event.find({user: req.user.id})
+    //     const matchBets = await MatchesBet.find()
+    //     res.status(200).json(matchBets)
+    // })
+    
+// VERSIONE 1 PER RICORDO //porta giu le schedine con i dati dei match 
 const getMatchesBet = asyncHandler(async (req, res) => {
-    const matchBets = await MatchesBet.find();
-
-    const betPaid = 2; // Assuming betPaid is a fixed value, else fetch it dynamically
-
-    const matchIds = matchBets.flatMap(matchBet => matchBet.matches);
-    const matches = await Match.find({ _id: { $in: matchIds } });
-
-    const processedBets = matchBets.map(matchBet => {
-        const relatedMatches = matches.filter(match => matchBet.matches.includes(match._id.toString()));
-
-        const totalOdds = relatedMatches.reduce((betAcc, match) => {
-            const matchOdds = parseFloat(match.odds.replace(',', '.')) || 1;
-            return betAcc * matchOdds;
-        }, 1);
-
-        let vincita, profitto;
-
-        if (matchBet.isWin) {
-            vincita = totalOdds * betPaid;
-            profitto = vincita - betPaid;
-        } else if (matchBet.isWin === null) {
-            vincita = 1 * betPaid;
-            profitto = 0;
-        } else {
-            vincita = 0;
-            profitto = -betPaid;
-        }
-
-
-        return {
-            ...matchBet.toObject(),
-            totalOdds: totalOdds.toFixed(2),
-            vincita: vincita.toFixed(2),
-            profitto: profitto.toFixed(2),
-            relatedMatches
-        };
-    });
-
-    res.status(200).json(processedBets);
+    const matchBets = await MatchesBet.find().populate('matches');
+    res.status(200).json(matchBets);
 });
 
 //@desc set match
@@ -63,17 +24,37 @@ const getMatchesBet = asyncHandler(async (req, res) => {
 //@access Private
 const setMatchesBet = asyncHandler(async (req, res) => {
     // Ensure req.body is an array
-    const matches = Array.isArray(req.body) ? req.body : [req.body];
+    const matches = Array.isArray(req.body.matches) ? req.body.matches : [req.body.matches];
 
     if (!matches || matches.length < 1) {
         res.status(400);
         throw new Error("add matches is missing");
     }
+    
+    let TempOdds = parseFloat(req.body.totalOdds).toFixed(2);
+    let vincita, profitto;
+    let parsePaid = parseFloat(req.body.betPaid);
 
+    if (req.body.isWin) {
+        vincita = TempOdds * parsePaid;
+        profitto = vincita - parsePaid;
+    } else if (req.body.isWin === null) {
+        vincita = 1 * req.body.betPaid;
+        profitto = null;
+    } else {
+        vincita = 0;
+        profitto = -req.body.betPaid;
+    }
+    
     // Create a new MatchesBet record
     const matchBets = await MatchesBet.create({
         user: req.user.id,
         matches: matches, // Will be filled after match creation
+        isWin: req.body.isWin,
+        betPaid: req.body.betPaid,
+        totalOdds: TempOdds,
+        totalWin: vincita,
+        profit: profitto
     });
 
     res.status(200).json(matchBets);

@@ -6,6 +6,26 @@ const matchesBetSchema = new mongoose.Schema({
         ref: 'User', 
         required: true 
     },
+    betPaid: {
+        type: Number,
+        required: false,
+        default: null
+    },
+    totalOdds: {
+        type: Number,
+        required: false,
+        default: null
+    },
+    totalWin: {
+        type: Number,
+        required: false,
+        default: null
+    },
+    profit: {
+        type: Number,
+        required: false,
+        default: null
+    },
     isWin: { 
         type: Boolean, 
         default: null 
@@ -14,7 +34,7 @@ const matchesBetSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId, 
             ref: 'Match' 
         }], // Array of Match IDs
-    }, 
+    },
     {
         timestamps: true 
     }

@@ -20,7 +20,7 @@ import { BsDashCircle } from "react-icons/bs";
 import { BsXCircle } from "react-icons/bs";
 
 
-const SingleMatch = ({dateMatch, homeTeam, awayTeam, league, odds, typeOfBet, typeOfBet_choice}) => {
+const SingleMatch = ({dateMatch, homeTeam, awayTeam, league, odds, typeOfBet, typeOfBet_choice, matchWin}) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -72,10 +72,12 @@ const SingleMatch = ({dateMatch, homeTeam, awayTeam, league, odds, typeOfBet, ty
 
             <div style={{ display:'flex' }}>
                 <div style={{ width: '30px' }} className='d-flex align-items-center'>
-                    <div style={{borderRadius:"100%", backgroundColor:"green", height:"15px", width:"15px"}}></div>
-                    {/* <BsDashCircle size='30'/> */}
-                    {/* <BsXCircle size='30' />*/}
-                    {/* <BsCheckCircle size='30' />  */}
+                    {matchWin === true && <div style={{borderRadius:"100%", backgroundColor:"green", height:"15px", width:"15px"}}></div>}
+                    {matchWin === false && <div style={{borderRadius:"100%", backgroundColor:"red", height:"15px", width:"15px"}}></div>}
+                    {matchWin === null && <div style={{borderRadius:"100%", backgroundColor:"yellow", height:"15px", width:"15px"}}></div>}
+                    {/* {matchWin === true && <BsDashCircle size='30'/>}
+                    {matchWin === false && <BsXCircle size='30' />}
+                    {matchWin === null && <BsCheckCircle size='30' />} */}
                 </div>
                 <div className='d-flex justify-content-between w-100'>
                     <div className='w-75'>
