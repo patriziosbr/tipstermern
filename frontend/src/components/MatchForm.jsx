@@ -10,6 +10,7 @@ import {retext} from 'retext';
 import pos from 'retext-pos';
 import keywords from 'retext-keywords';
 import {toString} from 'nlcst-to-string';
+import { toast } from 'react-toastify'
 
 const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
   const [recognizedText, setRecognizedText] = useState('');
@@ -192,6 +193,7 @@ const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
     
     return errors;
   };
+  
 
   const filteredOptions = [
     { value: { nameTips: "Tipster1", id: "1" }, option: "Tipster1" },
@@ -213,7 +215,7 @@ const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
 
   const onSubmit = async (e) => {
     e.preventDefault()
-    console.log( formData, "formData");
+    // console.log( formData, "formData");
     const newErrors = validateForm(formData);
     console.log(newErrors, "newErrors");
     
@@ -221,9 +223,10 @@ const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
 
 
     if (Object.keys(newErrors).length === 0) {
-      console.log('Form submitted successfully!');
+      toast.success('Form submitted successfully!');
     } else {
-      console.log('Form submission failed due to validation errors.');
+      toast.error("Form submission failed due to validation errors.");
+      return
     }
     
     const matchesArray = [];
@@ -248,36 +251,41 @@ const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
         betPaid: formData[`betPaid`]
       });
     }
-    console.log('matchesArray matchesArray matchesArray:', matchesArray);
+    // console.log('matchesArray matchesArray matchesArray:', matchesArray);
     
     let matchesBetData = {};
     let matchesID = [];
     let matchesWinLoss = [];
     let totalOdds = [];
     await dispatch(createMatch( matchesArray )).then((result)=>{
-      console.log(result, "result");
+      // console.log(result, "result");
       result.payload.map((single) => {
         matchesID.push(single._id);
         matchesWinLoss.push(single.matchWin);
         totalOdds.push(single.odds)
-
-        if(matchesWinLoss.includes(false)){
-          matchesBetData = {matches: matchesID, isWin: false}
-        } else if (matchesWinLoss.includes(null) || matchesWinLoss.includes(undefined)) {
+//refactor oggetto matchesBetData sotto
+        if(matchesWinLoss.includes(0)){
+          matchesBetData = {matches: matchesID, isWin: 0}
+        } else if (matchesWinLoss.includes(2) || matchesWinLoss.includes(null) || matchesWinLoss.includes(undefined)) {
           matchesBetData = {matches: matchesID, isWin: null}
         } else {
           matchesBetData = {matches: matchesID, isWin: true}
         }
       })
+    }).catch(function(error) {
+      console.error("error", error)
+      return
     })
+
     const totalOddsRes = totalOdds.reduce((prev, next, index) => prev * next )
-    console.log(totalOddsRes, "totalOddsRes");
+    // console.log(totalOddsRes, "totalOddsRes");
     
     matchesBetData.totalOdds = totalOddsRes
     matchesBetData.betPaid = formData[`betPaid`]
 
     await dispatch(createMatchesBet( matchesBetData )).then((result)=>{
-      console.log(result, "result2");
+      // console.log(result, "result2");
+      // toast.success(result.meta.requestStatus)
     })
   }
 
