@@ -8,8 +8,10 @@ import Col from 'react-bootstrap/Col';
 
 import ImageUploader from "../components/ImageUploader";
 // import TextRecognition from "../components/TextRecognition";
-import MatchForm from "../components/matchForm.jsx";
-
+// import MatchForm from "../components/MatchForm"
+import ImageToText from '../components/utils/ImageToText'
+import KeyWordPhrases from '../components/utils/KeyWordPhrases'
+import GeminiForm from '../components/GeminiForm'
 
 
 function OcrBoard() {
@@ -19,7 +21,8 @@ function OcrBoard() {
   const { foods, isLoading, isError, message } = useSelector(
     (state) => state.foods
   )
-  
+  const [recognizedText, setRecognizedText] = useState('');
+  const [aIText, setAIText] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
@@ -33,18 +36,19 @@ function OcrBoard() {
 
 
   const handleImageUpload = (image) => {
-    console.log(image, "image");
+    // console.log(image, "image");
     setSelectedImage(image);
   };
 
   const textHandler = (text) => {
-    // console.log(text, "text in parent");
+    setRecognizedText(text);
   }
-  const [keyWordAndPhrasesList, setKeyWordAndPhrasesList] = useState([]);
-  const keyWordAndPhrases = (text) => {
-    setKeyWordAndPhrasesList(text)
-    // console.log(text, "keyWordAndPhrases");
+
+  const AIText = (text) => {
+    setAIText(text);
   }
+  console.log(aIText, "last aIText nel padre");
+  
 
   if (isLoading) {
     return <Spinner />
@@ -56,25 +60,20 @@ function OcrBoard() {
         <Row>
           <Col xs={12}>
             <section className='heading'>
-              <h1>Welcome {user && user.name} back in js</h1>
+              <h1>Welcome {user && user.name}</h1>
             </section>
           </Col>
           <Col md={4}>
             <ImageUploader onImageUpload={handleImageUpload} />
-            <div className="d-none d-lg-block mt-3">
-              { keyWordAndPhrasesList.length > 0 &&<h5>Keywords&Phrases</h5> }
-                <ul className="keywords">
-                  {keyWordAndPhrasesList.map((keyword, index) => (
-                    <li key={index}>{keyword}</li>
-                  ))}
-                </ul>
-            </div>
+            <KeyWordPhrases recognizedText={recognizedText}/>
           </Col>
           {/* <Col md={8}>
             {selectedImage && <TextRecognition selectedImage={selectedImage} keyWordAndPhrases={keyWordAndPhrases}/>}
           </Col> */}
           <Col md={8}>
-          <MatchForm selectedImage={selectedImage} keyWordAndPhrases={keyWordAndPhrases}/>
+          <ImageToText selectedImage={selectedImage} textHandler={textHandler}/>
+          <GeminiForm recognizedText={recognizedText} AIText={AIText}/>
+          {/* <MatchForm selectedImage={selectedImage} keyWordAndPhrases={keyWordAndPhrases}/> */}
           </Col>
         </Row>
       </Container>

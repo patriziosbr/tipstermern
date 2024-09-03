@@ -31,19 +31,21 @@ const setMatchesBet = asyncHandler(async (req, res) => {
         throw new Error("add matches is missing");
     }
     
-    let TempOdds = parseFloat(req.body.totalOdds).toFixed(2);
+    let TempOdds = parseFloat(req.body.totalOdds);
     let vincita, profitto;
     let parsePaid = parseFloat(req.body.betPaid);
-
+    console.log(typeof TempOdds, "typeof TempOdds");
+    console.log(TempOdds, "TempOdds");
+    
     if (req.body.isWin) {
-        vincita = TempOdds * parsePaid;
+        vincita = TempOdds.toFixed(2) * parsePaid;
         profitto = vincita - parsePaid;
     } else if (req.body.isWin === null) {
-        vincita = 1 * req.body.betPaid;
+        vincita = TempOdds.toFixed(2) * parsePaid;
         profitto = null;
     } else {
         vincita = 0;
-        profitto = -req.body.betPaid;
+        profitto = -parsePaid;
     }
     
     // Create a new MatchesBet record
@@ -57,6 +59,8 @@ const setMatchesBet = asyncHandler(async (req, res) => {
         profit: profitto
     });
 
+    console.log(matchBets, "matchBets");
+    
     res.status(200).json(matchBets);
 });
 

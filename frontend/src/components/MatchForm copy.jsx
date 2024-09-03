@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Tesseract from 'tesseract.js';
 import { useDispatch } from 'react-redux';
 import { createMatch } from '../features/matches/matchSlice';
 import { createMatchesBet } from '../features/matchesBet/matchesBetSlice';
@@ -11,11 +12,13 @@ import keywords from 'retext-keywords';
 import {toString} from 'nlcst-to-string';
 import { toast } from 'react-toastify'
 
-const MatchForm = ({  }) => {
-  // const [recognizedText, setRecognizedText] = useState('');
+const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
+  const [recognizedText, setRecognizedText] = useState('');
   const [matchSplit, setMatchSplit] = useState([]);
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({}); // erroe ONSUBMIT
+  const [keywordsList, setKeywordsList] = useState([]);
+  const [keyPhrasesList, setKeyPhrasesList] = useState([]);
   const [matchCount, setMatchCount] = useState(0);
   const handle = ({target:{value}}) => setRecognizedText(value)
   const [formBlocks, setFormBlocks] = useState([]);
@@ -39,6 +42,20 @@ const MatchForm = ({  }) => {
 
   }, [matchSplit]);
 
+  useEffect(() => {
+    const recognizeText = async () => {
+      if (selectedImage) {
+        const { data: { text } } = await Tesseract.recognize(selectedImage, 'eng');
+        setRecognizedText(text);
+        // textHandler(text); // x passare text nel padre
+        processText(text);
+        countMatches(text);
+        extractMatchInfo(text)
+      }
+    };   
+    recognizeText();
+   
+  }, [selectedImage]);
 
   const onChange = (e) => {
     const { name, value } = e.target;
@@ -49,6 +66,28 @@ const MatchForm = ({  }) => {
     }));
   };
 
+  const extractMatchInfo = (text) => {
+    const pattern = /(?<date>\d{2}\/\d{2} \d{2}:\d{2}) /g;
+    const patternLeague = /(?<league>^.*$)/g;
+    const extractedMatches = [];
+    let match;
+
+    // Remove the RegExp constructor to directly use the regex pattern
+    while ((match = pattern.exec(text)) !== null) {
+        extractedMatches.push({
+            date: match.groups.date,
+        });
+    }
+    
+    while ((match = patternLeague.exec(text)) !== null) {
+        extractedMatches.push({
+            league: match.groups.league,
+        });
+    }
+    
+    console.log(extractedMatches, "Extracted Matches");
+    return extractedMatches; // Return the extracted matches if needed
+};
 
   const countMatches = (text) => {
     const datePattern = /\d{2}\/\d{2}(?:\/\d{4})?\s\d{2}:\d{2}/g;
@@ -77,6 +116,24 @@ const MatchForm = ({  }) => {
     validateForm(initialState)
 };
   
+  const processText = (text) => {
+    retext()
+      .use(pos) // Part-of-speech tagging
+      .use(keywords) // Keyword and key-phrase extraction
+      .process(text, (err, file) => {
+        if (err) throw err;
+        const extractedKeywords = file.data.keywords.map((keyword) =>
+          toString(keyword.matches[0].node)
+        );
+        const extractedKeyPhrases = file.data.keyphrases.map((phrase) =>
+          phrase.matches[0].nodes.map((node) => toString(node)).join('')
+        );
+        setKeywordsList(extractedKeywords);
+        setKeyPhrasesList(extractedKeyPhrases);
+        keyWordAndPhrases([...extractedKeywords, ...extractedKeyPhrases])
+      });
+  };
+
   const handleAddBlock = () => {
     setFormBlocks([...formBlocks, { index: formBlocks.length }]);
   };
@@ -160,6 +217,7 @@ const MatchForm = ({  }) => {
     
     return errors;
   };
+  
 
   const filteredOptions = [
     { value: { nameTips: "Tipster1", id: "1" }, option: "Tipster1" },
@@ -186,6 +244,7 @@ const MatchForm = ({  }) => {
     console.log(newErrors, "newErrors");
     
     setErrors(newErrors);
+
 
     if (Object.keys(newErrors).length === 0) {
       toast.success('Form submitted successfully!');

@@ -7,7 +7,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 
-import FoodForm from '../components/FoodForm'
+import GeminiForm from '../components/GeminiForm'
 
 
 function FoodFormDashboard() {
@@ -44,7 +44,7 @@ function FoodFormDashboard() {
               <h1>Welcome {user && user.name}</h1>
             </section>
 
-            <FoodForm/>
+            <GeminiForm/>
           </Col>
         </Row>
       </Container>

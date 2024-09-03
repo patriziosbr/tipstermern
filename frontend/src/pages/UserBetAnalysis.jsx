@@ -88,14 +88,6 @@ const UserBetAnalysis = () => {
         }
     }
     
-    const getNameTips = (tipster) => {
-        if (tipster.value && tipster.value.nameTips) {
-            return tipster.value.nameTips;
-        } else if (tipster.nameTips) {
-            return tipster.nameTips;
-        }
-        return ''; // Default to an empty string if neither is present
-    };
         
     if (isLoading) {
         return <Spinner />;
@@ -119,7 +111,7 @@ const UserBetAnalysis = () => {
                                                         <div className='d-flex justify-content-between'>
                                                             {matchIndex === 0 && 
                                                                 <>  
-                                                                    <p>Name: <b><i>{match.tipster.option}</i></b></p>
+                                                                    <p>Name: <b><i>{match.tipster.value.nameTips}</i></b></p>
                                                                     <span className='text-danger' style={{cursor: "pointer"}}><FaRegTrashAlt onClick={() => deleteRealod(_id)} /></span>
                                                                 </>
                                                             }
@@ -149,13 +141,13 @@ const UserBetAnalysis = () => {
                                     )}
                                     <div className='d-flex justify-content-end mb-3'>
                                         <div className='btn btn-primary px-4'>
-                                            <small className='m-0'>Quota {totalOdds}</small>
+                                            <small className='m-0'>Quota {totalOdds.toFixed(2)}</small>
                                         </div>
                                     </div>
                                     <ListGroup>
                                         <ListGroup.Item>Pagato: {betPaid.toFixed(2)}€</ListGroup.Item>
                                         <ListGroup.Item variant="light">Vincita: {totalWin.toFixed(2)}€</ListGroup.Item>
-                                        <ListGroup.Item>Profitto: {profit.toFixed(2)}€</ListGroup.Item>
+                                        <ListGroup.Item>Profitto: {profit?.toFixed(2)}€</ListGroup.Item>
                                     </ListGroup>
                                 </div>
                             );
@@ -169,7 +161,7 @@ const UserBetAnalysis = () => {
                     {singleMatch.map((match, index)=> (
                         <Fragment key={index}>
                             <div style={{width : "620px", height: "465px", border: "1px solid black"}}>
-                            {JSON.stringify(match)}
+
 
                             </div>
                         </Fragment>
