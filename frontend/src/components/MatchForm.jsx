@@ -5,14 +5,14 @@ import { createMatchesBet } from '../features/matchesBet/matchesBetSlice';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { FaRegTrashAlt } from "react-icons/fa";
-import {retext} from 'retext';
-import pos from 'retext-pos';
-import keywords from 'retext-keywords';
-import {toString} from 'nlcst-to-string';
+
 import { toast } from 'react-toastify'
 
-const MatchForm = ({  }) => {
-  // const [recognizedText, setRecognizedText] = useState('');
+const MatchForm = ({ aIText }) => {
+
+  console.log(aIText ,"aIText");
+  
+  const [recognizedText, setRecognizedText] = useState(aIText);
   const [matchSplit, setMatchSplit] = useState([]);
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({}); // erroe ONSUBMIT
@@ -39,6 +39,13 @@ const MatchForm = ({  }) => {
 
   }, [matchSplit]);
 
+  useEffect(() => {
+    if(aIText){
+      countMatches(aIText[0])
+    }
+   
+  }, []);
+
 
   const onChange = (e) => {
     const { name, value } = e.target;
@@ -51,30 +58,30 @@ const MatchForm = ({  }) => {
 
 
   const countMatches = (text) => {
-    const datePattern = /\d{2}\/\d{2}(?:\/\d{4})?\s\d{2}:\d{2}/g;
-    const leaguePattern = /-\s([\w\s]+(?:\s[\w\s]+)?)(?=\s-\s)/g;
-    const teamPattern = /-\s([\w\s]+)\s-\s([\w\s]+)/g;
-    const matches = text.match(datePattern) || [];
-    const leagues = [...text.matchAll(leaguePattern)].map(match => match[1].trim()) || [];
-    const teams = [...text.matchAll(teamPattern)] || [];
-    const totalMatches = Math.min(matches.length, leagues.length, teams.length);
+    // const datePattern = /\d{2}\/\d{2}(?:\/\d{4})?\s\d{2}:\d{2}/g;
+    // const leaguePattern = /-\s([\w\s]+(?:\s[\w\s]+)?)(?=\s-\s)/g;
+    // const teamPattern = /-\s([\w\s]+)\s-\s([\w\s]+)/g;
+    // const matches = text.match(datePattern) || [];
+    // const leagues = [...text.matchAll(leaguePattern)].map(match => match[1].trim()) || [];
+    // const teams = [...text.matchAll(teamPattern)] || [];
+    // const totalMatches = Math.min(matches.length, leagues.length, teams.length);
 
-    const initialState = Array.from({ length: totalMatches }, (_, index) => ({
-      [`matchDate${index}`]: formattedDate(matches[index]) || '',
-      [`league${index}`]: leagues[index] || '',
-      [`homeTeam${index}`]: teams[index][1].trim() || '',
-      [`awayTeam${index}`]: teams[index][2].trim() || '',
-      [`typeOfBet${index}`]: '',
-      [`typeOfBet_choice${index}`]: '',
-      [`odds${index}`]: '',
-      [`matchWin${index}`]: 2,
-      [`betPaid`]: 1
-    })).reduce((acc, match) => ({ ...acc, ...match }), {});
+    // const initialState = Array.from({ length: totalMatches }, (_, index) => ({
+    //   [`matchDate${index}`]: formattedDate(matches[index]) || '',
+    //   [`league${index}`]: leagues[index] || '',
+    //   [`homeTeam${index}`]: teams[index][1].trim() || '',
+    //   [`awayTeam${index}`]: teams[index][2].trim() || '',
+    //   [`typeOfBet${index}`]: '',
+    //   [`typeOfBet_choice${index}`]: '',
+    //   [`odds${index}`]: '',
+    //   [`matchWin${index}`]: 2,
+    //   [`betPaid`]: 1
+    // })).reduce((acc, match) => ({ ...acc, ...match }), {});
 
-    setFormData(initialState);
-    setFormBlocks(Array.from({ length: totalMatches }, (_, index) => ({ index })));
-    setMatchCount(totalMatches);
-    validateForm(initialState)
+    // setFormData(initialState);
+    // setFormBlocks(Array.from({ length: totalMatches }, (_, index) => ({ index })));
+    // setMatchCount(totalMatches);
+    // validateForm(initialState)
 };
   
   const handleAddBlock = () => {
@@ -256,7 +263,7 @@ const MatchForm = ({  }) => {
 
   return (
     <div>
-      <Form className="mb-3" onSubmit={onSubmit}>
+      {/* <Form className="mb-3" onSubmit={onSubmit}>
        {recognizedText && 
        <>
         <h6>Match found: {matchCount}</h6>
@@ -418,7 +425,7 @@ const MatchForm = ({  }) => {
           </Button>
         </>
       }
-      </Form>
+      </Form> */}
       </div>
 
 

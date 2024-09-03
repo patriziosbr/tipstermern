@@ -25,7 +25,7 @@ const ImageToText = ({ selectedImage, textHandler }) => {
                 <Form.Control disabled as="textarea" rows={10} value={recognizedText} name={`recognizedText`} onChange={handle}/>
             </Form.Group> */}
 
-            <h6>Recognized Text:</h6>
+            {recognizedText && <h6>Recognized Text:</h6>}
             <p>{recognizedText.replace(/\n/g, "")}</p>
         </>
     )

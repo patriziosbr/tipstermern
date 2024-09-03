@@ -5,6 +5,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import Form from 'react-bootstrap/Form';
+import { Fragment } from "react";
 
 
 function GeminiForm({ recognizedText, AIText }) {
@@ -29,8 +30,9 @@ function GeminiForm({ recognizedText, AIText }) {
       const response = result.response;
       const text = response.text();
       console.log(text)
-      AIText(text)
-      setpromptResponses([...promptResponses,text]);
+      const responsesArr = [...promptResponses,text]
+      AIText(responsesArr)
+      setpromptResponses(responsesArr);
   
       setLoading(false)
     }
@@ -47,17 +49,22 @@ function GeminiForm({ recognizedText, AIText }) {
     }
   }, [recognizedText]);
 
-  console.log(recognizedText, "recognizedText");
+  useEffect(() => {
+    if(inputValue) {
+      getResponseForGivenPrompt()
+    }
+  })
+  // console.log(recognizedText, "recognizedText");
   
   return (
     <>
         <Row>
           <Col xs={12}>
 
-                  <Form.Group className="mb-3" controlId={`test`}>
+                  {/* <Form.Group className="mb-3" controlId={`test`}>
                   <Form.Label className=''>Recognized Text:</Form.Label>
                   <Form.Control disabled as="textarea" rows={10} value={inputValue} name={`recognizedText`} onChange={handleInputChange}/>
-                  </Form.Group>
+                  </Form.Group> */}
                   {/* <input
                     type="text"
                     value={inputValue}
@@ -73,20 +80,19 @@ function GeminiForm({ recognizedText, AIText }) {
                   </div>
                 </div>
               ) : (
-                promptResponses.map((promptResponse, index) => (
-                  <div key={index} >
-                    <div className={`response-text ${index === promptResponses.length - 1 ? 'fw-bold' : ''}`}>{promptResponse}</div>
-                  </div>
-                ))
+                <Fragment >
+                  {promptResponses.length > 0 && <h6 >AI Text:</h6>}
+                  {promptResponses.map((promptResponse, index) => (
+                    <div key={index} >
+                      <div className={`response-text ${index === promptResponses.length - 1 ? 'fw-bold' : ''}`}>{promptResponse}</div>
+                    </div>
+                  ))
+                  }
+                </Fragment>
               )}
+          </Col>
+        </Row>
 
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={12}>
-            <button onClick={getResponseForGivenPrompt} className="btn btn-primary mt-2 w-100">Send</button>
-          </Col>
-        </Row>
     </>
   )
 }

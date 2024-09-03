@@ -8,7 +8,7 @@ import Col from 'react-bootstrap/Col';
 
 import ImageUploader from "../components/ImageUploader";
 // import TextRecognition from "../components/TextRecognition";
-// import MatchForm from "../components/MatchForm"
+import MatchForm from "../components/MatchForm"
 import ImageToText from '../components/utils/ImageToText'
 import KeyWordPhrases from '../components/utils/KeyWordPhrases'
 import GeminiForm from '../components/GeminiForm'
@@ -22,7 +22,7 @@ function OcrBoard() {
     (state) => state.foods
   )
   const [recognizedText, setRecognizedText] = useState('');
-  const [aIText, setAIText] = useState('');
+  const [aIText, setAIText] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
@@ -72,8 +72,9 @@ function OcrBoard() {
           </Col> */}
           <Col md={8}>
           <ImageToText selectedImage={selectedImage} textHandler={textHandler}/>
-          <GeminiForm recognizedText={recognizedText} AIText={AIText}/>
-          {/* <MatchForm selectedImage={selectedImage} keyWordAndPhrases={keyWordAndPhrases}/> */}
+          <GeminiForm recognizedText={recognizedText} AIText={AIText}/> 
+          {/* DA RINOMIARE EMIT */}
+          <MatchForm  aIText={aIText}/>
           </Col>
         </Row>
       </Container>
