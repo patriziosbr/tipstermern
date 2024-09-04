@@ -8,16 +8,27 @@ import { FaRegTrashAlt } from "react-icons/fa";
 
 import { toast } from 'react-toastify'
 
-const MatchForm = ({ aIText }) => {
+const MatchForm = ({ aIText, recognizedText }) => {
+  const [errorText, setErrorText] = useState(null);
 
   console.log(aIText ,"aIText");
+  // Check for error message in AI response
+  useEffect(() => {
+    if (aIText && aIText.length > 0) {
+      if (aIText[0] === "Non posso analizzare testi diversi da match sportivi") {
+        setErrorText("Non posso analizzare testi diversi da match sportivi");
+      } else {
+        setErrorText(null); // Reset in case there's valid data
+      }
+    }
+  }, [aIText]);
   
-  const [recognizedText, setRecognizedText] = useState(aIText);
+  // const [recognizedText, setRecognizedText] = useState(aIText);
   const [matchSplit, setMatchSplit] = useState([]);
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({}); // erroe ONSUBMIT
   const [matchCount, setMatchCount] = useState(0);
-  const handle = ({target:{value}}) => setRecognizedText(value)
+  // const handle = ({target:{value}}) => setRecognizedText(value)
   const [formBlocks, setFormBlocks] = useState([]);
   const dispatch = useDispatch();
 
@@ -40,10 +51,9 @@ const MatchForm = ({ aIText }) => {
   }, [matchSplit]);
 
   useEffect(() => {
-    if(aIText){
-      countMatches(aIText[0])
+    if (aIText.length > 0) {
+      countMatches(aIText)
     }
-   
   }, []);
 
 
@@ -55,33 +65,49 @@ const MatchForm = ({ aIText }) => {
       [name]: value,
     }));
   };
+  const myFunction = (dataFromServer) => {
+
+    console.log(typeof dataFromServer, "typeof aiTextLast");
+    console.log(dataFromServer, "aiTextLast");
+    if (dataFromServer.includes("Non posso analizzare testi diversi da match sportivi") || dataFromServer.includes("non posso analizzare testi diversi da match sportivi")) {
+      console.log("evvove");
+      return
+    }
+
+    var parsedJSON = JSON.parse(dataFromServer);
+    let jsonMatchTemp = [];
+    for (var i=0;i<parsedJSON.length;i++) {
+         console.log(parsedJSON[i], "parsedJSON[i]");
+         jsonMatchTemp.push(parsedJSON[i]);
+    }
+    return jsonMatchTemp
+ }
 
 
   const countMatches = (text) => {
-    // const datePattern = /\d{2}\/\d{2}(?:\/\d{4})?\s\d{2}:\d{2}/g;
-    // const leaguePattern = /-\s([\w\s]+(?:\s[\w\s]+)?)(?=\s-\s)/g;
-    // const teamPattern = /-\s([\w\s]+)\s-\s([\w\s]+)/g;
-    // const matches = text.match(datePattern) || [];
-    // const leagues = [...text.matchAll(leaguePattern)].map(match => match[1].trim()) || [];
-    // const teams = [...text.matchAll(teamPattern)] || [];
-    // const totalMatches = Math.min(matches.length, leagues.length, teams.length);
+    let aiTextLast = text[text.length - 1]
 
-    // const initialState = Array.from({ length: totalMatches }, (_, index) => ({
-    //   [`matchDate${index}`]: formattedDate(matches[index]) || '',
-    //   [`league${index}`]: leagues[index] || '',
-    //   [`homeTeam${index}`]: teams[index][1].trim() || '',
-    //   [`awayTeam${index}`]: teams[index][2].trim() || '',
-    //   [`typeOfBet${index}`]: '',
-    //   [`typeOfBet_choice${index}`]: '',
-    //   [`odds${index}`]: '',
-    //   [`matchWin${index}`]: 2,
-    //   [`betPaid`]: 1
-    // })).reduce((acc, match) => ({ ...acc, ...match }), {});
+    const jsonMatches = myFunction(aiTextLast)
+    if(jsonMatches === undefined) return
+      // console.log(jsonMatches, "jsonMatch");
+      // console.log(typeof jsonMatches, "typeof jsonMatch");
 
-    // setFormData(initialState);
-    // setFormBlocks(Array.from({ length: totalMatches }, (_, index) => ({ index })));
-    // setMatchCount(totalMatches);
-    // validateForm(initialState)
+    const initialState = jsonMatches.reduce((acc, match, index) => {
+        acc[`matchDate${index}`] = formattedDate(match.dateTimeMatch) || '';
+        acc[`league${index}`] = match.league || '';
+        acc[`homeTeam${index}`] = match.homeTeam || '';
+        acc[`awayTeam${index}`] = match.awayTeam || '';
+        acc[`typeOfBet${index}`] = match.typeOfBet || '';
+        acc[`typeOfBet_choice${index}`] = match.typeOfBet_choice || '';
+        acc[`odds${index}`] = match.odds || '';
+        acc[`matchWin${index}`] = match.matchWin ?? 2;
+        acc[`betPaid${index}`] = match.betPaid || 1;
+        return acc;
+      }, {});
+      setFormData(initialState);
+      setFormBlocks(jsonMatches.length);
+      setMatchCount(jsonMatches.length);
+      validateForm(initialState)
 };
   
   const handleAddBlock = () => {
@@ -149,8 +175,8 @@ const MatchForm = ({ aIText }) => {
     for (const key in data) {
       if (Object.prototype.hasOwnProperty.call(data, key)) {
         const element = data[key];
-        console.log(key, "key");
-        console.log(element, "val");
+        // console.log(key, "key");
+        // console.log(element, "val");
 
         if (typeof element === "string" && !element.trim()) {
           console.log(`${key} is empty, marking as error`);
@@ -188,14 +214,14 @@ const MatchForm = ({ aIText }) => {
 
   const onSubmit = async (e) => {
     e.preventDefault()
-    // console.log( formData, "formData");
+    console.log( formData, "formData");
     const newErrors = validateForm(formData);
     console.log(newErrors, "newErrors");
     
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      toast.success('Form submitted successfully!');
+      console.log('Form submitted successfully!');
     } else {
       toast.error("Form submission failed due to validation errors.");
       return
@@ -217,7 +243,7 @@ const MatchForm = ({ aIText }) => {
         typeOfBet: formData[`typeOfBet${i}`],
         typeOfBet_choice: formData[`typeOfBet_choice${i}`],
         odds: formData[`odds${i}`],
-        tipster: tipsterObject ? tipsterObject.value : {value: { nameTips: formData[`tipster${i}`], id: "" }, option: formData[`tipster${i}`]},
+        tipster: tipsterObject ? tipsterObject : {value: { nameTips: formData[`tipster${i}`], id: "" }, option: formData[`tipster${i}`]},
         matchWin: formData[`matchWin${i}`] ?? 2,
         recognizedText : recognizedText,
         betPaid: formData[`betPaid`]
@@ -230,7 +256,7 @@ const MatchForm = ({ aIText }) => {
     let matchesWinLoss = [];
     let totalOdds = [];
     await dispatch(createMatch( matchesArray )).then((result)=>{
-      // console.log(result, "result");
+      console.log(result, "result");
       result.payload.map((single) => {
         matchesID.push(single._id);
         matchesWinLoss.push(single.matchWin);
@@ -257,21 +283,19 @@ const MatchForm = ({ aIText }) => {
 
     await dispatch(createMatchesBet( matchesBetData )).then((result)=>{
       // console.log(result, "result2");
-      // toast.success(result.meta.requestStatus)
+      toast.success('Form submitted successfully!');
     })
   }
 
   return (
     <div>
-      {/* <Form className="mb-3" onSubmit={onSubmit}>
-       {recognizedText && 
-       <>
-        <h6>Match found: {matchCount}</h6>
-        <Form.Group className="mb-3" controlId={`test`}>
-          <Form.Label className=''>Recognized Text:</Form.Label>
-          <Form.Control as="textarea" rows={10} value={recognizedText} name={`recognizedText`} onChange={handle}/>
-        </Form.Group>
-       </>}
+      {errorText ? (
+        <div>
+          <h1>{errorText}</h1>
+          <p>Please upload a valid sports match text.</p>
+        </div>
+      ) : (
+      <Form className="mb-3" onSubmit={onSubmit}>
 
       <Button onClick={handleAddBlock}>Add Giocata</Button>
       {formBlocks && formBlocks.map((block) => (
@@ -425,7 +449,8 @@ const MatchForm = ({ aIText }) => {
           </Button>
         </>
       }
-      </Form> */}
+      </Form>
+      )}
       </div>
 
 
