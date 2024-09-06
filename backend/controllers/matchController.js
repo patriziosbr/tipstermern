@@ -61,12 +61,15 @@ const setMatch = asyncHandler(async (req, res) => {
 });
 
 //@desc update Goals
-//@route PUT/PATCH /api/event/:id
+//@route PUT/PATCH /api/match/:id
 //@access Private
-const updateEvent = asyncHandler(async (req, res) => {
-    const event = await Event.findById(req.params.id)
-    if(!event) {
-        throw new Error("add event in url / event not found ")
+const updateMatch = asyncHandler(async (req, res) => {
+    // console.log(req, "req");
+    console.log(req.body, "req.body");
+    
+    const match = await Match.findById(req.params.id)
+    if(!match) {
+        throw new Error("add match in url / match not found ")
     }
 
     //check user
@@ -75,12 +78,12 @@ const updateEvent = asyncHandler(async (req, res) => {
         throw new Error("user not found")
     }
     //check if user is owner
-    if(event.user.toString() !== req.user.id){
+    if(match.user.toString() !== req.user.id){
         res.status(401)
         throw new Error("user not authorized")
     }
-    const updatedEvent= await Event.findByIdAndUpdate(req.params.id, req.body, {new : true})
-    res.status(200).json(updatedEvent)
+    const updateMatch= await Match.findByIdAndUpdate(req.params.id, req.body, {new : true})
+    res.status(200).json(updateMatch)
 })
 
 //@desc cancel goals
@@ -112,6 +115,6 @@ const deleteEvent = asyncHandler(async (req, res) => {
 module.exports = {
     getMatch,
     setMatch,
-    // updateEvent,
+    updateMatch,
     // deleteEvent
 }

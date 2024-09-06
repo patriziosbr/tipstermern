@@ -46,23 +46,23 @@ const deleteMatchesBet = async (matchBetId, token) => {
   return response.data
 }
 // Update events
-// const updateMatch = async (matchId, matchData, token) => {
-//   const config = {
-//     headers: {
-//       Authorization: `Bearer ${token}`,
-//     },
-//   }
+const updateMatchBet = async (matchId, matchData, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
 
-//   const response = await axios.put(API_URL + matchId, eventData, config)
+  const response = await axios.put(API_URL + matchId, matchData, config)
 
-//   return response.data
-// }
+  return response.data
+}
 
 
 
 const matchesBetService = {
   createMatchesBet,
-  // updateMatch,
+  updateMatchBet,
   getMatchesBet,
   deleteMatchesBet
 }

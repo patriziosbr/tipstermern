@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { getMatch, setMatch } = require('../controllers/matchController');
+const { getMatch, setMatch, updateMatch } = require('../controllers/matchController');
 const { protect } = require('../middleware/authMiddleware')
 
 
 router.route('/').get(protect, getMatch).post(protect, setMatch) //shortcut ORIGIN
+router.route('/:id').put(protect, updateMatch)
 // router.route('/:id').put(protect, updateEvent).delete(protect, deleteEvent) //shortcut
 
 // // router.get('/', getGoals)

@@ -20,7 +20,7 @@ function GeminiForm({ recognizedText, setAIText, onComplete }) {
   const getResponseForGivenPrompt = async () => {
     try {
       setLoading(true);
-      const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+      const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
       const result = await model.generateContent(inputValue);
       setInputValue('');
       const response = result.response;
@@ -41,7 +41,40 @@ function GeminiForm({ recognizedText, setAIText, onComplete }) {
 
   useEffect(() => {
     if (recognizedText) {
-      setInputValue(`ciao gemini, di seguito fornirò del testo, assicurati di eseguire le seguenti istruzioni correttamente, analizza soltanto il testo se ci sono dei match di calcio, basket, tennis o ping-pong, se il testo è diverso dagli argomenti elencati interrompi l'analisi e rispondi con "non posso analizzare testi diversi da match sportivi". Analizza quanti incontri ci sono, suddividi le informazioni in JSON e restituisci un ARRAY contenente JSON OBJECTS per ogni match. Esempio: '[{numeroDiMatch: 2, dateTimeMatch: 01/08/2024 00:00, homeTeam: Belgio, awayTeam: Montenegro, league: Internazionale - Amichevoli Internazionali, odds: 1.51, typeOfBet: 1X2, typeOfBet_choice: 1}, {... secondo match se esiste}]' non aggiungere ulteriori caratteri prima o dopo le [] restituisci sempre un array di oggetti. Testo da analizzare: ${recognizedText}`);
+      setInputValue(`"Analizza il seguente testo contenente informazioni su partite sportive. 
+Estrarre i seguenti dati per ogni partita e restituirli in formato JSON:
+
+* **homeTeam:** Nome della squadra di casa (italia, spagna, lazio, roma, machester, ajax)
+* **awayTeam:** Nome della squadra ospite (italia, spagna, lazio, roma, machester, ajax)
+* **league:** Nome della lega (UEFA, la liga, mondiali, amichevoli)
+* **matchDate:** Data e Ora della partita (formato AAAA-MM-GGTHH:MM)
+* **typeOfBet:** Tipo di scommessa (1X2)
+* **typeOfBet_choice:** Scommessa selezionata (1)
+* **odds:** Quota della scommessa (1.59)
+
+Il testo è strutturato nel seguente modo:
+
+[homeTeam] - [awayTeam] | [league] | [matchDate]
+
+**Esempio di input:**
+
+Real Madrid - Barcelona | La Liga | 05/06 21:00 (gg/mm hh:mm)
+
+**Esempio di output:**
+
+[
+  {
+    "homeTeam": "Real Madrid",
+    "awayTeam": "Barcelona",
+    "league": "La Liga",
+    "dataPartita": "2023-11-19T21:00",
+    "typeOfBet": "1X2",
+    "typeOfBet_choice": "1"
+    "odds": 1.29
+  }
+]
+**Estrai solo il JSON come response:**
+**Testo da analizzare:**${recognizedText}`);
     }
   }, [recognizedText]);
 

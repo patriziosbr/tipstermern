@@ -12,12 +12,54 @@ const Match = require("../model/matchModel")
     //     const matchBets = await MatchesBet.find()
     //     res.status(200).json(matchBets)
     // })
-    
 // VERSIONE 1 PER RICORDO //porta giu le schedine con i dati dei match 
+
+// const getMatchesBet = asyncHandler(async (req, res) => {
+//     const matchBets = await MatchesBet.find().populate('matches');
+//     console.log(matchBets, "matchBets controller");
+    
+//     res.status(200).json(matchBets);
+// });
+
 const getMatchesBet = asyncHandler(async (req, res) => {
     const matchBets = await MatchesBet.find().populate('matches');
+
+    // Loop through each matchBet
+    for (let matchBet of matchBets) {
+        // Check if at least one matchWin is 2 (pending)
+        const hasPendingMatch = matchBet.matches.some(match => match.matchWin === 2);
+        matchBet.profit = 0
+
+        if (hasPendingMatch) {
+            // If there's at least one pending match, set isWin to null
+            matchBet.isWin = null;
+        } else {
+            // Otherwise, check if all matches are won
+            const allMatchesWin = matchBet.matches.every(match => match.matchWin === 1);
+            
+            if (allMatchesWin) {
+                matchBet.isWin = true; // All matches are won
+                matchBet.profit = matchBet.totalWin - matchBet.betPaid
+            } else {
+                matchBet.isWin = false; // At least one match is lost
+                matchBet.profit = -matchBet.betPaid
+            }
+        }
+
+        // Save the updated matchBet document
+        await matchBet.save();
+    }
+
+
+    console.log(matchBets, "matchBets controller");
+
     res.status(200).json(matchBets);
 });
+
+
+
+
+
 
 //@desc set match
 //@route POST /api/match
@@ -34,13 +76,13 @@ const setMatchesBet = asyncHandler(async (req, res) => {
     let TempOdds = parseFloat(req.body.totalOdds);
     let vincita, profitto;
     let parsePaid = parseFloat(req.body.betPaid);
-    console.log(typeof TempOdds, "typeof TempOdds");
-    console.log(TempOdds, "TempOdds");
+    // console.log(typeof TempOdds, "typeof TempOdds");
+    // console.log(TempOdds, "TempOdds");
     
     if (req.body.isWin) {
         vincita = TempOdds.toFixed(2) * parsePaid;
         profitto = vincita - parsePaid;
-    } else if (req.body.isWin === null) {
+    } else if (req.body.isWin === null || req.body.isWin === undefined || req.body.isWin === 2) {
         vincita = TempOdds.toFixed(2) * parsePaid;
         profitto = null;
     } else {
@@ -59,15 +101,15 @@ const setMatchesBet = asyncHandler(async (req, res) => {
         profit: profitto
     });
 
-    console.log(matchBets, "matchBets");
+    // console.log(matchBets, "matchBets");
     
     res.status(200).json(matchBets);
 });
 
 //@desc update Goals
-//@route PUT/PATCH /api/event/:id
+//@route PUT/PATCH /api/matchesBet/:id
 //@access Private
-const updateEvent = asyncHandler(async (req, res) => {
+const updateUpdateEvent = asyncHandler(async (req, res) => {
     const event = await Event.findById(req.params.id)
     if(!event) {
         throw new Error("add event in url / event not found ")

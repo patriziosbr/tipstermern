@@ -41,13 +41,15 @@ export const createMatch = createAsyncThunk(
 
 // Update match
 export const updateMatch = createAsyncThunk(
-  'matches/update',
+  'match/update',
   async (data, thunkAPI) => {
+    console.log(data, "data");
+    
     try {
       const token = thunkAPI.getState().auth.user.token;
-      const eventId = data.matchId;
-      const matchData = { ...data.matchData };
-      return await matchService.updateEvent(eventId, matchData, token);
+      const matchId = data.matchId;
+      const matchData = data.body;
+      return await matchService.updateMatch(matchId, matchData, token);
     } catch (error) {
       const message =
         (error.response?.data?.message) || error.message || error.toString();

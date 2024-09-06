@@ -9,6 +9,7 @@ import Col from 'react-bootstrap/Col';
 import ImageUploader from "../components/ImageUploader";
 // import TextRecognition from "../components/TextRecognition";
 import MatchForm from "../components/MatchForm"
+import MatchFormManual from "../components/MatchFormManual"
 import ImageToText from '../components/utils/ImageToText'
 import KeyWordPhrases from '../components/utils/KeyWordPhrases'
 import GeminiForm from '../components/GeminiForm'
@@ -63,7 +64,7 @@ function OcrBoard() {
             </section>
           </Col>
           <Col md={4}>
-            <ImageUploader onImageUpload={handleImageUpload} />
+          <ImageUploader onImageUpload={handleImageUpload} />
             <KeyWordPhrases recognizedText={recognizedText} />
           </Col>
           <Col md={8}>
@@ -76,6 +77,7 @@ function OcrBoard() {
             />
             {/* DA RINOMIARE EMIT */}
             {isGeminiComplete && <MatchForm aIText={aIText} recognizedText={recognizedText}/>}
+            {!isGeminiComplete && <MatchFormManual/>}
           </Col>
         </Row>
       </Container>

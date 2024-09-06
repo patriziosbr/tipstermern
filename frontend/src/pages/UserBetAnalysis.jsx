@@ -6,6 +6,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { getMatchBets, deleteMatchesBet,  reset } from '../features/matchesBet/matchesBetSlice';
+import { updateMatch } from '../features/matches/matchSlice';
 import Spinner from '../components/Spinner';
 import SingleMatch from '../components/SingleMatch';
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -49,39 +50,50 @@ const UserBetAnalysis = () => {
         };
     }, [user, navigate, isError, message, dispatch]);
 
-    const getMatchStats = async (date, homeTeam, awayTeam) => {
-
-        const resMatchstats = await callRapidApi(date.split("T")[0], homeTeam, awayTeam);
-        console.log(resMatchstats, "resMatchstats");
-        
-    }
+    // const getMatchStats = async (date, homeTeam, awayTeam) => {
+    //     const resMatchstats = await callRapidApi(date.split("T")[0], homeTeam, awayTeam);
+    //     console.log(resMatchstats, "resMatchstats");
+    // }
 
 
-    const callRapidApi = (date, homeTeam, awayTeam) => {
-        const data = JSON.stringify({});
+    // const callRapidApi = (date, homeTeam, awayTeam) => {
+    //     const data = JSON.stringify({});
 
-        const xhr = new XMLHttpRequest();
-        xhr.withCredentials = true;
+    //     const xhr = new XMLHttpRequest();
+    //     xhr.withCredentials = true;
         
-        xhr.addEventListener('readystatechange', function () {
-            if (this.readyState === this.DONE) {
-            console.log(this.responseText ,"this.responseText");
-            }
-        });
+    //     xhr.addEventListener('readystatechange', function () {
+    //         if (this.readyState === this.DONE) {
+    //         console.log(this.responseText ,"this.responseText");
+    //         }
+    //     });
         
-        xhr.open('POST', `https://sportscore1.p.rapidapi.com/events/search-similar-name?date=${date}&page=1&locale=en&sport_id=1&name=${homeTeam}%20-%20${awayTeam}`);
-        xhr.setRequestHeader('x-rapidapi-key', '6038627b82mshec5a5dbd6feb18ap143fdajsn488215009ba6');
-        xhr.setRequestHeader('x-rapidapi-host', 'sportscore1.p.rapidapi.com');
-        xhr.setRequestHeader('Content-Type', 'application/json');
+    //     xhr.open('POST', `https://sportscore1.p.rapidapi.com/events/search-similar-name?date=${date}&page=1&locale=en&sport_id=1&name=${homeTeam}%20-%20${awayTeam}`);
+    //     xhr.setRequestHeader('x-rapidapi-key', '6038627b82mshec5a5dbd6feb18ap143fdajsn488215009ba6');
+    //     xhr.setRequestHeader('x-rapidapi-host', 'sportscore1.p.rapidapi.com');
+    //     xhr.setRequestHeader('Content-Type', 'application/json');
         
-        xhr.send(data);
-    };
+    //     xhr.send(data);
+    // };
 
     const deleteRealod = async (_id) => {
         try {
             await dispatch(deleteMatchesBet(_id)).unwrap(); // Wait for delete to complete
             // dispatch(getMatchBets()); // Refetch the data
             toast.success("match eliminato con succcesso")
+        } catch (error) {
+            toast.error("Errore: " + error)
+            console.error("Error deleting match bet:", error);
+        }
+    }
+
+    const updateMatchbtn = async (_id, updateParam) => {
+        console.log(_id, updateParam);
+        let data = {matchId : _id, body: updateParam}
+        try {
+            await dispatch(updateMatch(data)) // Wait for delete to complete
+            dispatch(getMatchBets());
+            toast.success("match aggiornato con succcesso")
         } catch (error) {
             toast.error("Errore: " + error)
             console.error("Error deleting match bet:", error);
@@ -111,7 +123,7 @@ const UserBetAnalysis = () => {
                                                         <div className='d-flex justify-content-between'>
                                                             {matchIndex === 0 && 
                                                                 <>  
-                                                                    <p>Name: <b><i>{match.tipster.value.nameTips}</i></b></p>
+                                                                    <p>Name: <b><i>{match.tipster?.value.nameTips}</i></b></p>
                                                                     <span className='text-danger' style={{cursor: "pointer"}}><FaRegTrashAlt onClick={() => deleteRealod(_id)} /></span>
                                                                 </>
                                                             }
@@ -125,13 +137,29 @@ const UserBetAnalysis = () => {
                                                             typeOfBet={match.typeOfBet} 
                                                             typeOfBet_choice={match.typeOfBet_choice} 
                                                             matchWin={match.matchWin}
-                                                            
                                                         />
-                                                        <Stack direction="horizontal" gap={2}>
-                                                            <Badge pill className='ms-4 mt-2 p-2 border border-secondary text-secondary' bg="light" style={{cursor: "pointer"}} onClick={() => getMatchStats(match.dateMatch, match.homeTeam, match.awayTeam )}>
-                                                                Statistiche
-                                                            </Badge>
-                                                        </Stack>
+                                                            {/* <Stack direction="horizontal" gap={2}>
+                                                                <Badge pill className='ms-4 mt-2 p-2 border border-secondary text-secondary' bg="light" style={{cursor: "pointer"}} onClick={() => getMatchStats(match.dateMatch, match.homeTeam, match.awayTeam )}>
+                                                                    Statistiche
+                                                                </Badge>
+                                                            </Stack> */}
+                                                        <div className="d-flex">
+                                                            <Stack direction="horizontal" gap={2}>
+                                                                <Badge pill className='ms-4 mt-2 p-2 border border-danger text-danger' bg="light" style={{cursor: "pointer"}} onClick={() => updateMatchbtn(match._id, {matchWin: 0})}>
+                                                                    Persa
+                                                                </Badge>
+                                                            </Stack>
+                                                            <Stack direction="horizontal" gap={2}>
+                                                                <Badge pill className='ms-4 mt-2 p-2 border border-warning text-warning' bg="light" style={{cursor: "pointer"}} onClick={() => updateMatchbtn(match._id, {matchWin: 2})}>
+                                                                    Annulata
+                                                                </Badge>
+                                                            </Stack>
+                                                            <Stack direction="horizontal" gap={2}>
+                                                                <Badge pill className='ms-4 mt-2 p-2 border border-success text-success' bg="light" style={{cursor: "pointer"}} onClick={() => updateMatchbtn(match._id, {matchWin: 1})}>
+                                                                    Vinta
+                                                                </Badge>
+                                                            </Stack>
+                                                        </div>
                                                     </div>
                                                 </Fragment>
                                             );

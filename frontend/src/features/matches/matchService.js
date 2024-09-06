@@ -34,23 +34,23 @@ const createMatch = async (matchData, token) => {
   return response.data
 }
 // Update events
-// const updateMatch = async (matchId, matchData, token) => {
-//   const config = {
-//     headers: {
-//       Authorization: `Bearer ${token}`,
-//     },
-//   }
+const updateMatch = async (matchId, matchData, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
 
-//   const response = await axios.put(API_URL + matchId, eventData, config)
+  const response = await axios.put(API_URL + matchId, matchData, config)
 
-//   return response.data
-// }
+  return response.data
+}
 
 
 
 const matchService = {
   createMatch,
-  // updateMatch,
+  updateMatch,
   getMatch,
 }
 

@@ -65,9 +65,9 @@ export const updateMatchBet = createAsyncThunk(
   async (data, thunkAPI) => {
     try {
       const token = thunkAPI.getState().auth.user.token;
-      const eventId = data.matchId;
+      const matchId = data.matchId;
       const matchData = { ...data.matchData };
-      return await matchesBetService.updateEvent(eventId, matchData, token);
+      return await matchesBetService.updateMatchBet(matchId, matchData, token);
     } catch (error) {
       const message =
         (error.response?.data?.message) || error.message || error.toString();

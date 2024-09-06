@@ -8,35 +8,20 @@ import { FaRegTrashAlt } from "react-icons/fa";
 
 import { toast } from 'react-toastify'
 
-const MatchForm = ({ aIText, recognizedText }) => {
-  const [errorText, setErrorText] = useState(null);
-
-  console.log(aIText ,"aIText");
-  // Check for error message in AI response
-  useEffect(() => {
-    if (aIText && aIText.length > 0) {
-      if (aIText[0] === "Non posso analizzare testi diversi da match sportivi") {
-        setErrorText("Non posso analizzare testi diversi da match sportivi");
-      } else {
-        setErrorText(null); // Reset in case there's valid data
-      }
-    }
-  }, [aIText]);
-  
-  // const [recognizedText, setRecognizedText] = useState(aIText);
-  const [matchSplit, setMatchSplit] = useState([]);
+const MatchFormManual = () => {
   const [formData, setFormData] = useState({});
+  const [recognizedText, setRecognizedText] = useState("");
   const [errors, setErrors] = useState({}); // erroe ONSUBMIT
   const [matchCount, setMatchCount] = useState(0);
   // const handle = ({target:{value}}) => setRecognizedText(value)
   const [formBlocks, setFormBlocks] = useState([]);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    if (aIText.length > 0) {
-      countMatches(aIText)
-    }
-  }, []);
+  // useEffect(() => {
+
+  //     countMatches()
+
+  // }, []);
 
   const onChange = (e) => {
     const { name, value } = e.target;
@@ -46,69 +31,30 @@ const MatchForm = ({ aIText, recognizedText }) => {
       [name]: value,
     }));
   };
-  const cleanData = (dataFromServer) => {
-    try {
-      console.log(typeof dataFromServer, "typeof dataFromServer");
-      console.log(dataFromServer, "dataFromServer");
-  
-      // Verifica se il testo contiene errori specifici
-      if (dataFromServer.includes("Non posso analizzare testi diversi da match sportivi") || dataFromServer.includes("non posso analizzare testi diversi da match sportivi")) {
-        console.error("Error: Invalid data");
-        return [];
-      }
-  
-      // Pulisce il testo rimuovendo tutto prima del primo "[" e dopo l'ultimo "]"
-      const startIndex = dataFromServer.indexOf("[");
-      const endIndex = dataFromServer.lastIndexOf("]") + 1;  // Include il carattere "]"
-      const cleanedData = dataFromServer.substring(startIndex, endIndex);
-      
-      console.log(cleanedData, "cleanedData");
-  
-      // Parse del JSON
-      const parsedJSON = JSON.parse(cleanedData);
-  
-      // Inizializza un array per salvare i match
-      let jsonMatchTemp = [];
-  
-      // Itera sugli oggetti del JSON e aggiungili all'array
-      for (let i = 0; i < parsedJSON.length; i++) {
-        console.log(parsedJSON[i], "parsedJSON[i]");
-        jsonMatchTemp.push(parsedJSON[i]);
-      }
-  
-      return jsonMatchTemp;
-    } catch (error) {
-      console.error("Error parsing data:", error);
-      return [];
-    }
-  };
-  
 
-  const countMatches = (text) => {
-    let aiTextLast = text[text.length - 1]
 
-    const jsonMatches = cleanData(aiTextLast)
+//   const countMatches = () => {
 
-    // console.log(jsonMatches, "jsonMatch");
-    // console.log(typeof jsonMatches, "typeof jsonMatch");
+//     // console.log(jsonMatches, "jsonMatch");
+//     // console.log(typeof jsonMatches, "typeof jsonMatch");
 
-    const initialState = jsonMatches.reduce((acc, match, index) => {
-        acc[`matchDate${index}`] = match.dateTimeMatch || '';
-        acc[`league${index}`] = match.league || '';
-        acc[`homeTeam${index}`] = match.homeTeam || '';
-        acc[`awayTeam${index}`] = match.awayTeam || '';
-        acc[`typeOfBet${index}`] = match.typeOfBet || '';
-        acc[`typeOfBet_choice${index}`] = match.typeOfBet_choice || '';
-        acc[`odds${index}`] = match.odds || '';
-        acc[`matchWin${index}`] = match.matchWin ?? 2;
-        acc[`betPaid${index}`] = match.betPaid || 1;
-        return acc;
-      }, {});
-      setFormData(initialState);
-      setFormBlocks(Array.from({ length: jsonMatches.length }, (_, index) => ({ index })));
-      setMatchCount(jsonMatches.length);
-      validateForm(initialState)
-};
+//     const initialState = matchCount.reduce((acc, match, index) => {
+//         acc[`matchDate${index}`] = match.dateTimeMatch || '';
+//         acc[`league${index}`] = match.league || '';
+//         acc[`homeTeam${index}`] = match.homeTeam || '';
+//         acc[`awayTeam${index}`] = match.awayTeam || '';
+//         acc[`typeOfBet${index}`] = match.typeOfBet || '';
+//         acc[`typeOfBet_choice${index}`] = match.typeOfBet_choice || '';
+//         acc[`odds${index}`] = match.odds || '';
+//         acc[`matchWin${index}`] = match.matchWin ?? 2;
+//         acc[`betPaid${index}`] = match.betPaid || 1;
+//         return acc;
+//       }, {});
+//       setFormData(initialState);
+//       setFormBlocks(Array.from({ length: matchCount }, (_, index) => ({ index })));
+//       setMatchCount(matchCount);
+//       validateForm(initialState)
+// };
   
   const handleAddBlock = () => {
     setFormBlocks([...formBlocks, { index: formBlocks.length }]);
@@ -245,7 +191,7 @@ const MatchForm = ({ aIText, recognizedText }) => {
         odds: formData[`odds${i}`],
         tipster: tipsterObject ? tipsterObject : {value: { nameTips: formData[`tipster${i}`], id: "" }, option: formData[`tipster${i}`]},
         matchWin: formData[`matchWin${i}`] ?? 2,
-        recognizedText : recognizedText,
+        recognizedText : recognizedText || '',
         betPaid: formData[`betPaid`]
       });
     }
@@ -289,14 +235,8 @@ const MatchForm = ({ aIText, recognizedText }) => {
 
   return (
     <div>
-      {errorText ? (
-        <div>
-          <h1>{errorText}</h1>
-          <p>Please upload a valid sports match text.</p>
-        </div>
-      ) : (
       <>
-        <Button onClick={handleAddBlock}>Add Giocata</Button>
+        <Button onClick={handleAddBlock}>Add Giocata 2</Button>
         <Form className="mb-3" onSubmit={onSubmit}>  
 
 
@@ -453,7 +393,7 @@ const MatchForm = ({ aIText, recognizedText }) => {
       }
         </Form>
       </>
-      )}
+
       </div>
 
 
@@ -463,4 +403,4 @@ const MatchForm = ({ aIText, recognizedText }) => {
   );
 };
 
-export default MatchForm;
+export default MatchFormManual;
