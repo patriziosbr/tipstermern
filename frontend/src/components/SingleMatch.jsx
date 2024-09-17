@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 // import { useNavigate } from 'react-router-dom'
 // import { useSelector, useDispatch } from 'react-redux'
 // // import Container from 'react-bootstrap/Container';
@@ -20,8 +20,8 @@ import Card from 'react-bootstrap/Card';
 // import { BsXCircle } from "react-icons/bs";
 
 
-const SingleMatch = ({dateMatch, homeTeam, awayTeam, league, odds, typeOfBet, typeOfBet_choice, matchWin}) => {
-
+const SingleMatch = ({matchID, dateMatch, homeTeam, awayTeam, league, odds, typeOfBet, typeOfBet_choice, matchWin, settermatchstats}) => {
+  const [matchData, setMatchData] = useState({}); 
 
     const isoToDateFormatter = (paramDate) => {
         let date = new Date(paramDate);
@@ -38,8 +38,14 @@ const SingleMatch = ({dateMatch, homeTeam, awayTeam, league, odds, typeOfBet, ty
         let parseDate = `${dt}/${month}/${year}`
         return parseDate
     }
-
-
+    const handleFetchTodo = async () => {
+        // Await the result of settermatchstats and set it directly to state
+        const matchStats = await settermatchstats(dateMatch, homeTeam, awayTeam, matchID);
+        if (matchStats) {
+          setMatchData(matchStats); // Set match data in state
+        }
+      };
+      
     return (
         <>
         {/* <Card>
@@ -58,7 +64,7 @@ const SingleMatch = ({dateMatch, homeTeam, awayTeam, league, odds, typeOfBet, ty
                 <div className='d-flex justify-content-between w-100'>
                     <div className='w-75'>
                         <small className="mb-2 text-muted" >{isoToDateFormatter(dateMatch)} - {league}</small>
-                        <Card.Title >{homeTeam} - {awayTeam}</Card.Title>
+                        <Card.Title ><a href="#" onClick={handleFetchTodo}>{homeTeam} - {awayTeam} </a></Card.Title>
                         <Card.Text>
                         {typeOfBet}
                         </Card.Text>

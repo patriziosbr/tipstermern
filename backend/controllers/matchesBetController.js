@@ -51,7 +51,7 @@ const getMatchesBet = asyncHandler(async (req, res) => {
     }
 
 
-    console.log(matchBets, "matchBets controller");
+    // console.log(matchBets, "matchBets controller");
 
     res.status(200).json(matchBets);
 });
