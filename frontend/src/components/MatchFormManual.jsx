@@ -229,7 +229,7 @@ const MatchFormManual = () => {
 
     await dispatch(createMatchesBet( matchesBetData )).then((result)=>{
       // console.log(result, "result2");
-      toast.success('Form submitted successfully!');
+      toast.success('Schedina Creata!');
     })
   }
 

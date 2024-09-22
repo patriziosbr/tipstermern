@@ -49,11 +49,10 @@ const getMatchesBet = asyncHandler(async (req, res) => {
         // Save the updated matchBet document
         await matchBet.save();
     }
-
-
     // console.log(matchBets, "matchBets controller");
-
-    res.status(200).json(matchBets);
+    const reversedMatchBets = matchBets.reverse();
+    
+    res.status(200).json(reversedMatchBets);
 });
 
 

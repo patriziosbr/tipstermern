@@ -216,12 +216,11 @@ const UserBetAnalysis = () => {
                               <div className="d-flex justify-content-between">
                                 {matchIndex === 0 && (
                                   <>
-                                    <p>
-                                      Name:{" "}
-                                      <b>
-                                        <i>{match.tipster?.value.nameTips}</i>
-                                      </b>
-                                    </p>
+                                    { match.tipster?.value.nameTips ? (
+                                    <p> 
+                                      Tipster Name: <b><i>{match.tipster?.value.nameTips}</i></b>
+                                    </p> ) : (<p></p>) 
+                                     }
                                     <span
                                       className="text-danger"
                                       style={{ cursor: "pointer" }}

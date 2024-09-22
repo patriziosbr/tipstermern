@@ -205,7 +205,7 @@ const MatchForm = ({ aIText, recognizedText }) => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      console.log('Form submitted successfully!');
+      console.log('Schedina Creata!');
     } else {
       toast.error("Form submission failed due to validation errors.");
       return
@@ -267,7 +267,7 @@ const MatchForm = ({ aIText, recognizedText }) => {
 
     await dispatch(createMatchesBet( matchesBetData )).then((result)=>{
       // console.log(result, "result2");
-      toast.success('Form submitted successfully!');
+      toast.success('Schedina Creata!');
     })
   }
 
