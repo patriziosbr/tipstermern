@@ -50,22 +50,72 @@ function OcrBoard() {
     setAIText(text);
   };
 
+  let classScrollDown =  {
+    "position" : 'fixed',
+    "top" : '60px',
+    "zIndex" : '888',
+    "width" : 'calc(100vw - 60px)',
+  } 
+  let classScrollDownDesktop =  {
+    "position" : 'fixed',
+    "top" : '40px',
+    "zIndex" : '777',
+    "minWidth" : '100px',
+    "maxWidth":"400px" 
+  } 
+
+  let classScrollUp = {
+    "position" : 'relative',
+    "top" : '0',
+    "left" : '0',
+    "zIndex" : 'unset',
+    "width": '100%',
+  }
+
+  const [classOver, setClassOver] = useState(classScrollUp);
+
+  const handleScroll = () => {
+      const position = window.pageYOffSet || document.documentElement.scrollTop
+      const viewWidth = window.innerWidth;
+      if(position >= 100 ){
+        if(viewWidth > 750) {
+          setClassOver(classScrollDownDesktop)
+        } else {
+          setClassOver(classScrollDown)
+        }
+      } else if(position === 0) {
+        setClassOver(classScrollUp)
+      } else {
+        setClassOver(classScrollUp)
+      }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+        window.removeEventListener('scroll', handleScroll);
+    };
+}, []);
+
   if (isLoading) {
     return <Spinner />;
   }
 
   return (
-    <>
-      <Container style={{ marginTop: '80px' }}>
+    < >
+      <Container style={{ marginTop: '80px' }} >
         <Row>
           <Col xs={12}>
             <section className="heading">
               <h1>Welcome {user && user.name}</h1>
             </section>
           </Col>
-          <Col md={4}>
-          <ImageUploader onImageUpload={handleImageUpload} />
-            <KeyWordPhrases recognizedText={recognizedText} />
+          <Col md={4} onScroll={handleScroll} >
+            <div style={{...classOver}}>
+              <ImageUploader onImageUpload={handleImageUpload} />
+              <KeyWordPhrases recognizedText={recognizedText} />
+            </div>
           </Col>
           <Col md={8}>
             <ImageToText selectedImage={selectedImage} textHandler={textHandler} />

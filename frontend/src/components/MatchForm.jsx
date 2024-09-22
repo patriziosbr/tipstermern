@@ -5,13 +5,13 @@ import { createMatchesBet } from '../features/matchesBet/matchesBetSlice';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import { FaRegTrashAlt } from "react-icons/fa";
-
+import { formattedDate_iso } from "./utils/formatDate.js"
 import { toast } from 'react-toastify'
 
 const MatchForm = ({ aIText, recognizedText }) => {
   const [errorText, setErrorText] = useState(null);
 
-  console.log(aIText ,"aIText");
+  // console.log(aIText ,"aIText");
   // Check for error message in AI response
   useEffect(() => {
     if (aIText && aIText.length > 0) {
@@ -82,18 +82,17 @@ const MatchForm = ({ aIText, recognizedText }) => {
       return [];
     }
   };
-  
 
   const countMatches = (text) => {
     let aiTextLast = text[text.length - 1]
 
     const jsonMatches = cleanData(aiTextLast)
 
-    // console.log(jsonMatches, "jsonMatch");
+    console.log(jsonMatches, "jsonMatch");
     // console.log(typeof jsonMatches, "typeof jsonMatch");
 
     const initialState = jsonMatches.reduce((acc, match, index) => {
-        acc[`matchDate${index}`] = match.dateTimeMatch || '';
+        acc[`matchDate${index}`] = match.matchDate || '';
         acc[`league${index}`] = match.league || '';
         acc[`homeTeam${index}`] = match.homeTeam || '';
         acc[`awayTeam${index}`] = match.awayTeam || '';
@@ -136,21 +135,6 @@ const MatchForm = ({ aIText, recognizedText }) => {
       }));
     });
   };
-
-  const formattedDate = (dateStr)=>{
-    const [day, month , year] = dateStr.split(" ")[0].split("/");
-    const time = dateStr.split(" ")[1];
-    let formattedDate = "";
-
-    if(year) {
-      formattedDate = `${year}-${month}-${day}T${time}:00`
-    } else {
-      const currentYear = new Date().getFullYear();
-      formattedDate = `${currentYear}-${month}-${day}T${time}:00`
-    }
-    
-    return formattedDate
-  }
 
   const validateForm = (data) => {
     let errors = {};
@@ -296,7 +280,7 @@ const MatchForm = ({ aIText, recognizedText }) => {
         </div>
       ) : (
       <>
-        <Button onClick={handleAddBlock}>Add Giocata</Button>
+        <Button className='my-3' onClick={handleAddBlock}>Add Giocata</Button>
         <Form className="mb-3" onSubmit={onSubmit}>  
 
 

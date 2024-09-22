@@ -108,11 +108,11 @@ Real Madrid - Barcelona | La Liga | 05/06 21:00 (gg/mm hh:mm)
                   </div>
                 </div>
               ) : (
-                <Fragment >
-                  {promptResponses.length > 0 && <h6 >AI Text:</h6>}
+                <Fragment class="d-none d-md-block">
+                  {promptResponses.length > 0 && <h6 class="d-none d-md-block" >AI Text:</h6>}
                   {promptResponses.map((promptResponse, index) => (
                     <div key={index} >
-                      <div className={`response-text ${index === promptResponses.length - 1 ? 'fw-bold' : ''}`}>{promptResponse}</div>
+                      <div className= {`response-text ${index === promptResponses.length - 1 ? 'fw-bold' : ''} d-none d-md-block`}>{promptResponse}</div>
                     </div>
                   ))
                   }

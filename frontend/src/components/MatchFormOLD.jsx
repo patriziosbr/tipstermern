@@ -325,7 +325,7 @@ const MatchForm = ({ selectedImage, keyWordAndPhrases }) => {
         </Form.Group>
        </>}
 
-      <Button onClick={handleAddBlock}>Add Giocata</Button>
+      <Button className='my-3' onClick={handleAddBlock}>Add Giocata</Button>
       {formBlocks && formBlocks.map((block) => (
         <div key={block.index}>
           <h6>Giocata: {block.index + 1} <span className='text-danger'><FaRegTrashAlt onClick={()=>deleteBlock(block.index)} /></span></h6>
