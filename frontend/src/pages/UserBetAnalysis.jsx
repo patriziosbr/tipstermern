@@ -71,6 +71,9 @@ const UserBetAnalysis = () => {
   const callRapidApi = (date, homeTeam, awayTeam) => {
     setStatByEventIDResult([])
     setFilteredData([])
+    setMatchName('');
+    setUniquePeriod([])
+    
     const data = JSON.stringify({});
 
     const xhr = new XMLHttpRequest();
@@ -81,7 +84,7 @@ const UserBetAnalysis = () => {
         try {
           const responseJson = JSON.parse(this.responseText);
           setResponseMatches(responseJson);
-          // console.log(responseJson, "Parsed response");
+          console.log(responseJson, "Parsed response prima chiamta");
         } catch (error) {
           console.error("Error parsing response:", error);
           setResponseMatches(null); // or handle the error as appropriate
@@ -123,6 +126,12 @@ const UserBetAnalysis = () => {
         setUniquePeriod(unique)
         
         setMatchName(matchName);
+        console.log(responseMatches, "responseMatches");
+        
+        const result = responseMatches.data.filter((match) => match.id === eventId);
+        console.log(result, "result");
+        
+        
         }
     });
 
