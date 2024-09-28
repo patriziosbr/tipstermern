@@ -14,11 +14,34 @@ import { updateMatch } from "../features/matches/matchSlice";
 import Spinner from "../components/Spinner";
 import SingleMatch from "../components/SingleMatch";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { AiOutlineEdit } from 'react-icons/ai'
 import { toast } from "react-toastify";
 import Badge from "react-bootstrap/Badge";
 import Stack from "react-bootstrap/Stack";
+import Modal from 'react-bootstrap/Modal';
+import MatchFormManualEdit from '../components/MatchFormManualEdit'
+
 
 const UserBetAnalysis = () => {
+  // modal
+  const [show, setShow] = useState(false);
+  const handleClose = () => {
+    setShow(false); // Optionally reset the ID on close
+  };
+  const handleShow = (id) => {
+    console.log(id, "pippo");
+    console.log(matchBets, "matchBets");
+     
+    const selectedBET = matchBets.find((bet) => bet._id === id);
+    console.log(selectedBET, "selectedBET");
+    
+    if (selectedBET) {
+      setSelectedBetEdit(selectedBET);
+      setShow(true);
+    }
+  };
+  const [selectedBetEdit, setSelectedBetEdit] = useState([]);
+  // redux
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [singleMatch, setSingleMatch] = useState([]);
@@ -41,9 +64,7 @@ const UserBetAnalysis = () => {
           const matchBets = await dispatch(getMatchBets()).unwrap();
 
           // Accumulate matches in a nested array structure
-          const allMatches = matchBets.map((single) => single.matches);
-
-          // Set the nested array of matches to state
+          const allMatches = matchBets.flatMap((single) => single.matches);
           setSingleMatch(allMatches);
         } catch (error) {
           console.error("Failed to fetch match bets:", error);
@@ -192,6 +213,8 @@ const UserBetAnalysis = () => {
 
 
   return (
+    <>
+    
     <Container style={{ marginTop: "80px" }}>
       <Row>
         <Col xs={12} md={6}>
@@ -221,14 +244,25 @@ const UserBetAnalysis = () => {
                                       Tipster Name: <b><i>{match.tipster?.value.nameTips}</i></b>
                                     </p> ) : (<p></p>) 
                                      }
-                                    <span
-                                      className="text-danger"
-                                      style={{ cursor: "pointer" }}
-                                    >
-                                      <FaRegTrashAlt
+
+                                    <div className="d-flex">
+                                      <span
+                                        onClick={() => handleShow(_id)}
+                                        className="d-flex"
+                                        style={{ cursor: "pointer", height: "45px", width: "45px", border: "1px solid black"  }}
+                                        >
+                                        <AiOutlineEdit className='m-auto' />
+                                      </span>
+                                      <span
+                                        className="text-danger d-flex"
+                                        style={{ cursor: "pointer", height: "45px", width: "45px", border: "1px solid black"  }}
                                         onClick={() => deleteRealod(_id)}
-                                      />
-                                    </span>
+                                        >
+                                        <FaRegTrashAlt
+                                          className='m-auto'  
+                                        />
+                                      </span>
+                                    </div>
                                   </>
                                 )}
                               </div>
@@ -327,7 +361,7 @@ const UserBetAnalysis = () => {
                     <div className="d-flex justify-content-end mb-3">
                       <div className="btn btn-primary px-4">
                         <small className="m-0">
-                          Quota {totalOdds.toFixed(2)}
+                          Quota {totalOdds?.toFixed(2)}
                         </small>
                       </div>
                     </div>
@@ -390,7 +424,27 @@ const UserBetAnalysis = () => {
 </Col>
 
       </Row>
+
     </Container>
+      <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title><b>Modifica:</b></Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedBetEdit ? (
+            <>
+              {/* <p><b>Home Team:</b> {selectedMatchEdit.homeTeam}</p>
+              <p><b>Away Team:</b> {selectedMatchEdit.awayTeam}</p>
+              <p><b>Date:</b> {new Date(selectedMatchEdit.dateMatch).toLocaleDateString()}</p> */}
+              {/* {console.log("selectedBetEdit", selectedBetEdit)} */}
+              <MatchFormManualEdit selectedBetEdit={selectedBetEdit} />
+            </>
+          ) : (
+            <p>No match selected</p>
+          )}
+        </Modal.Body>
+      </Modal>
+    </>
   );
 };
 

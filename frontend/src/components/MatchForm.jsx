@@ -10,27 +10,33 @@ import { toast } from 'react-toastify'
 
 const MatchForm = ({ aIText, recognizedText }) => {
   const [errorText, setErrorText] = useState(null);
-
-  // console.log(aIText ,"aIText");
-  // Check for error message in AI response
-  useEffect(() => {
-    if (aIText && aIText.length > 0) {
-      if (aIText[0] === "Non posso analizzare testi diversi da match sportivi") {
-        setErrorText("Non posso analizzare testi diversi da match sportivi");
-      } else {
-        setErrorText(null); // Reset in case there's valid data
-      }
-    }
-  }, [aIText]);
-  
-  // const [recognizedText, setRecognizedText] = useState(aIText);
   const [matchSplit, setMatchSplit] = useState([]);
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({}); // erroe ONSUBMIT
   const [matchCount, setMatchCount] = useState(0);
-  // const handle = ({target:{value}}) => setRecognizedText(value)
   const [formBlocks, setFormBlocks] = useState([]);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Reset the form when new aIText is uploaded
+    if (aIText && aIText.length > 0) {
+      resetForm(); // Clear existing data
+      if (aIText[0] === "Non posso analizzare testi diversi da match sportivi") {
+        setErrorText("Non posso analizzare testi diversi da match sportivi");
+      } else {
+        setErrorText(null);
+        countMatches(aIText);
+      }
+    }
+  }, [aIText]); // Run when aIText changes
+  
+  // Reset form fields and states when new data is uploaded
+  const resetForm = () => {
+    setFormData({});
+    setFormBlocks([]);
+    setErrors({});
+    setMatchCount(0);
+  };
 
   useEffect(() => {
     if (aIText.length > 0) {
@@ -51,7 +57,7 @@ const MatchForm = ({ aIText, recognizedText }) => {
       console.log(typeof dataFromServer, "typeof dataFromServer");
       console.log(dataFromServer, "dataFromServer");
   
-      // Verifica se il testo contiene errori specifici
+      // Verifica se il testo contiene errori specifici // devo fare un to lowercase 
       if (dataFromServer.includes("Non posso analizzare testi diversi da match sportivi") || dataFromServer.includes("non posso analizzare testi diversi da match sportivi")) {
         console.error("Error: Invalid data");
         return [];
@@ -100,7 +106,7 @@ const MatchForm = ({ aIText, recognizedText }) => {
         acc[`typeOfBet_choice${index}`] = match.typeOfBet_choice || '';
         acc[`odds${index}`] = match.odds || '';
         acc[`matchWin${index}`] = match.matchWin ?? 2;
-        acc[`betPaid${index}`] = match.betPaid || 1;
+        acc[`betPaid`] = match.betPaid || 1;
         return acc;
       }, {});
       setFormData(initialState);
@@ -114,28 +120,40 @@ const MatchForm = ({ aIText, recognizedText }) => {
   };
 
   const deleteBlock = (matchIndex) => {
-    // Remove the block
     setFormBlocks((prevBlocks) => {
       const updatedBlocks = prevBlocks.filter((_, index) => index !== matchIndex);
-
-      // Clear values of the deleted block from formData
-      const updatedFormData = { ...formData };
-      Object.keys(formData).forEach(key => {
-        if (key.endsWith(`${matchIndex}`)) {
-          delete updatedFormData[key];
-        }
+  
+      // Create a new formData object and shift the data of remaining blocks
+      const updatedFormData = {};
+  
+      updatedBlocks.forEach((block, newIndex) => {
+        const oldIndex = block.index;
+        
+        // Shift formData keys by updating to the new index
+        updatedFormData[`matchDate${newIndex}`] = formData[`matchDate${oldIndex}`];
+        updatedFormData[`league${newIndex}`] = formData[`league${oldIndex}`];
+        updatedFormData[`homeTeam${newIndex}`] = formData[`homeTeam${oldIndex}`];
+        updatedFormData[`awayTeam${newIndex}`] = formData[`awayTeam${oldIndex}`];
+        updatedFormData[`typeOfBet${newIndex}`] = formData[`typeOfBet${oldIndex}`];
+        updatedFormData[`typeOfBet_choice${newIndex}`] = formData[`typeOfBet_choice${oldIndex}`];
+        updatedFormData[`odds${newIndex}`] = formData[`odds${oldIndex}`];
+        updatedFormData[`matchWin${newIndex}`] = formData[`matchWin${oldIndex}`];
+        updatedFormData[`tipster${newIndex}`] = formData[`tipster${oldIndex}`];
       });
-
-      setFormData(updatedFormData); // Update formData state
-
-      // Update indices of remaining blocks
+  
+      // Copy over betPaid, as it is global
+      updatedFormData['betPaid'] = formData['betPaid'];
+  
+      // Update formData and formBlocks states
+      setFormData(updatedFormData);
+      
       return updatedBlocks.map((block, index) => ({
         ...block,
-        index: index, // Ensure the index is sequential
+        index: index, // Ensure the index is sequential after deleting a block
       }));
     });
   };
-
+  
   const validateForm = (data) => {
     let errors = {};
 
@@ -230,7 +248,7 @@ const MatchForm = ({ aIText, recognizedText }) => {
         tipster: tipsterObject ? tipsterObject : {value: { nameTips: formData[`tipster${i}`], id: "" }, option: formData[`tipster${i}`]},
         matchWin: formData[`matchWin${i}`] ?? 2,
         recognizedText : recognizedText,
-        betPaid: formData[`betPaid`]
+        betPaid: formData[`betPaid`] || 1
       });
     }
     // console.log('matchesArray matchesArray matchesArray:', matchesArray);
@@ -369,7 +387,7 @@ const MatchForm = ({ aIText, recognizedText }) => {
           <Form.Group className="mb-3" controlId={`formBasicEmail${block.index}`} style={{ width: '100%' }}>
             <Form.Label>Odds</Form.Label>
             <Form.Control
-              type="text"
+              type="number"
               name={`odds${block.index}`}
               value={formData[`odds${block.index}`] || ''}
               onChange={onChange}

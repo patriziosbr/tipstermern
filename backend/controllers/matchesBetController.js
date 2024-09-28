@@ -88,13 +88,14 @@ const setMatchesBet = asyncHandler(async (req, res) => {
         vincita = 0;
         profitto = -parsePaid;
     }
+    console.log(req.body.betPaid, "req.body.betPaid controller");
     
     // Create a new MatchesBet record
     const matchBets = await MatchesBet.create({
         user: req.user.id,
         matches: matches, // Will be filled after match creation
         isWin: req.body.isWin,
-        betPaid: req.body.betPaid,
+        betPaid: req.body.betPaid ? req.body.betPaid : 1,
         totalOdds: TempOdds,
         totalWin: vincita,
         profit: profitto
