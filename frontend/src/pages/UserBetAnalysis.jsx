@@ -94,7 +94,7 @@ const UserBetAnalysis = () => {
     setFilteredData([])
     setMatchName('');
     setUniquePeriod([])
-    
+    setSummaryInfos([])
     const data = JSON.stringify({});
 
     const xhr = new XMLHttpRequest();
