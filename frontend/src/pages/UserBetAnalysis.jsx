@@ -127,7 +127,7 @@ const UserBetAnalysis = () => {
   const [statByEventIDResult, setStatByEventIDResult] = useState([]);
   const [uniquePeriod, setUniquePeriod] = useState([]);
   const [matchName, setMatchName] = useState("");
-
+  const [summaryInfos, setSummaryInfos] = useState([]);
   const statByEventID = (eventId, matchName) => {
     setFilteredData([])
     const data = JSON.stringify({});
@@ -149,10 +149,20 @@ const UserBetAnalysis = () => {
         setMatchName(matchName);
         console.log(responseMatches, "responseMatches");
         
-        const result = responseMatches.data.filter((match) => match.id === eventId);
-        console.log(result, "result");
+        const overAllInfo = responseMatches.data.filter((match) => match.id === eventId);
+        console.log(overAllInfo, "overAllInfo");
+
+        let filters = ['away_score', 'home_score', 'status', 'winner_code'];
+        const filterJSON = (obj, fil) => fil.reduce((a, c) => (a[c] = obj[c], a), {});
         
+        let summaryInfosTemp = [];
+        overAllInfo.forEach((single) => {
+          summaryInfosTemp.push(filterJSON(single, filters));
+        });
         
+        // Set the filtered information after the loop
+        setSummaryInfos(summaryInfosTemp);
+
         }
     });
 
@@ -165,6 +175,24 @@ const UserBetAnalysis = () => {
 
     xhr.send(data);
 
+  };
+
+  const renderScore = (info, selected) => {
+    if (selected === "1st") {
+      return (
+        <p class="m-0">Score 1st time: <b>{info.home_score.period_1}:{info.away_score.period_1}</b></p>
+      );
+    } else if (selected === "2nd") {
+      return (
+        <p class="m-0">Score 2nd time: <b>{info.home_score.period_2}:{info.away_score.period_2}</b></p>
+      );
+    } else {
+      return (
+        <>
+          <p class="m-0">Score Final: <b>{info.home_score.current}:{info.away_score.current}</b></p>
+        </>
+      );
+    }
   };
 
   const [filteredData, setFilteredData] = useState([]); // New state to hold the filtered data
@@ -214,6 +242,7 @@ const UserBetAnalysis = () => {
 
   return (
     <>
+    {console.log(summaryInfos, "summary")}
     
     <Container style={{ marginTop: "80px" }}>
       <Row>
@@ -386,9 +415,17 @@ const UserBetAnalysis = () => {
         </Col>
         <Col sm={6} className="d-none d-sm-block">
 <h5>{matchName}</h5>
+{summaryInfos && summaryInfos.map((info, index) => (
+  <div key={index}>
+    {renderScore(info, selected)}
+    <p class="m-0">Status: <b>{info.status}</b></p>
+    <p class="m-0">Winner: <b>{info.winner_code}</b></p>
+  </div>
+))}
+
 <div className="d-flex">
     {uniquePeriod && uniquePeriod.map((period, index) => (
-      <Stack direction="horizontal" key={index}>
+      <Stack direction="horizontal" key={index+index}>
         <Badge
           pill
           className={`${index === 0 ? "ms-0" : "ms-4"} mt-2 p-2 border border-secondary text-secondary ${selected === period ? "border-2 fw-bolder fst-italic" : ""}`}
