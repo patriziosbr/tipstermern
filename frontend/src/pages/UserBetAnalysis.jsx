@@ -20,6 +20,7 @@ import Badge from "react-bootstrap/Badge";
 import Stack from "react-bootstrap/Stack";
 import Modal from 'react-bootstrap/Modal';
 import MatchFormManualEdit from '../components/MatchFormManualEdit'
+import CarouselContainer from '../components/CarouselContainer'
 
 
 const UserBetAnalysis = () => {
@@ -246,8 +247,17 @@ const UserBetAnalysis = () => {
     
     <Container style={{ marginTop: "80px" }}>
       <Row>
+          <Col xs={12} md={6}>
+            <h2>Analisi giocate</h2>
+          </Col>
+      </Row>
+      <Row>
+        <Col xs={12} md={12}>
+        <CarouselContainer/>
+        </Col>
+      </Row>
+      <Row>
         <Col xs={12} md={6}>
-          <h2>Analisi giocate</h2>
           {matchBets && matchBets.length > 0 ? (
             matchBets.map(
               (
