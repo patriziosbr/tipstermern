@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { getMatchesBet, setMatchesBet, deleteMatchesBet} = require('../controllers/matchesBetController');
+const { getMatchesBet, setMatchesBet, deleteMatchesBet, getMaxWin} = require('../controllers/matchesBetController');
 const { protect } = require('../middleware/authMiddleware')
 
 
 router.route('/').get(protect, getMatchesBet).post(protect, setMatchesBet) //shortcut ORIGIN
 router.route('/:id').delete(protect, deleteMatchesBet) //shortcut
 // router.route('/:id').put(protect, updateEvent).delete(protect, deleteMatchesBet) //shortcut
+router.route('/maxwin').get(protect, getMaxWin)
 
 // // router.get('/', getGoals)
 // // router.post('/', setGoals)

@@ -253,7 +253,8 @@ const UserBetAnalysis = () => {
       </Row>
       <Row>
         <Col xs={12} md={12}>
-        <CarouselContainer/>
+        {matchBets && matchBets.length > 0 ? (<CarouselContainer/>) : (<>PIPPO</>)} 
+
         </Col>
       </Row>
       <Row>

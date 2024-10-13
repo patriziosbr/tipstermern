@@ -58,13 +58,27 @@ const updateMatchBet = async (matchId, matchData, token) => {
   return response.data
 }
 
+// Get user match
+const getMaxWin = async (token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+
+  const response = await axios.get(API_URL+"maxwin", config)
+
+  return response.data
+}
+
 
 
 const matchesBetService = {
   createMatchesBet,
   updateMatchBet,
   getMatchesBet,
-  deleteMatchesBet
+  deleteMatchesBet,
+  getMaxWin
 }
 
 export default matchesBetService

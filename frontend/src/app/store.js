@@ -6,6 +6,9 @@ import foodReducer from '../features/foods/foodSlice' //buttare
 
 import matchReducer from '../features/matches/matchSlice'
 import matchesReducer from '../features/matchesBet/matchesBetSlice'
+import overall from '../features/matchesBet/matchesBetOverAllSlice'
+
+
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +17,7 @@ export const store = configureStore({
     events : eventReducer,
     foods: foodReducer,
     matches: matchReducer,
-    matchBets: matchesReducer
+    matchBets: matchesReducer,
+    overAll: overall,
   },
 })

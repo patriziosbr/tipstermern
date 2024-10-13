@@ -162,11 +162,21 @@ const deleteMatchesBet = asyncHandler(async (req, res) => {
     res.status(200).json({ id: req.params.id });
 });
 
+//@desc get goals
+//@route GET /api/matchBets/maxwin
+//@access Private
+const getMaxWin = asyncHandler(async (req, res) => {
+        // const event = await Event.find({user: req.user.id})
+        const maxWin = await MatchesBet.find()
+        res.status(200).json(maxWin)
+    })
+
 
 
 module.exports = {
     getMatchesBet,
     setMatchesBet,
     // updateEvent,
-    deleteMatchesBet
+    deleteMatchesBet,
+    getMaxWin
 }
