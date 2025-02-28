@@ -236,9 +236,8 @@ const MatchFormManual = () => {
   return (
     <div>
       <>
-        <Button onClick={handleAddBlock}>Add Giocata 2</Button>
-        <Form className="mb-3" onSubmit={onSubmit}>  
-
+      <Button onClick={handleAddBlock}>Add Giocata btn</Button>
+      <Form className="mb-3" onSubmit={onSubmit}>  
 
       {formBlocks && formBlocks.map((block) => (
         <div key={block.index}>

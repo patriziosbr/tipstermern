@@ -35,7 +35,8 @@ const matchSchema = mongoose.Schema(
         },
         recognizedText: {
             type: String,
-            require: false
+            require: false,
+            default: ""
         },
         tipster: {
             type: Object,

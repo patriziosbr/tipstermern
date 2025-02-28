@@ -5,16 +5,12 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import ListGroup from "react-bootstrap/ListGroup";
-import {
-  getMatchBets,
-  deleteMatchesBet,
-  reset,
-} from "../features/matchesBet/matchesBetSlice";
+import { getMatchBets, deleteMatchesBet, reset } from "../features/matchesBet/matchesBetSlice";
 import { updateMatch } from "../features/matches/matchSlice";
 import Spinner from "../components/Spinner";
 import SingleMatch from "../components/SingleMatch";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { AiOutlineEdit } from 'react-icons/ai'
+import { AiOutlineEdit } from "react-icons/ai";
 import { toast } from "react-toastify";
 import Badge from "react-bootstrap/Badge";
 import Stack from "react-bootstrap/Stack";
@@ -30,19 +26,13 @@ const UserBetAnalysis = () => {
     setShow(false); // Optionally reset the ID on close
   };
   const handleShow = (id) => {
-    console.log(id, "pippo");
-    console.log(matchBets, "matchBets");
-     
     const selectedBET = matchBets.find((bet) => bet._id === id);
-    console.log(selectedBET, "selectedBET");
-    
     if (selectedBET) {
       setSelectedBetEdit(selectedBET);
       setShow(true);
     }
   };
   const [selectedBetEdit, setSelectedBetEdit] = useState([]);
-  // redux
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [singleMatch, setSingleMatch] = useState([]);
@@ -63,7 +53,6 @@ const UserBetAnalysis = () => {
       const fetchBets = async () => {
         try {
           const matchBets = await dispatch(getMatchBets()).unwrap();
-
           // Accumulate matches in a nested array structure
           const allMatches = matchBets.flatMap((single) => single.matches);
           setSingleMatch(allMatches);
@@ -73,7 +62,6 @@ const UserBetAnalysis = () => {
       };
       fetchBets();
     }
-
     return () => {
       dispatch(reset());
     };
@@ -83,7 +71,7 @@ const UserBetAnalysis = () => {
   const getMatchStats = async (date, homeTeam, awayTeam, matchID) => {
     // console.log(matchID, "matchID");
     setSingleIDMatch(matchID);
-    await callRapidApi(date.split("T")[0], homeTeam, awayTeam);
+    callRapidApi(date.split("T")[0], homeTeam, awayTeam);
   };
 
   useEffect(() => {
@@ -124,13 +112,13 @@ const UserBetAnalysis = () => {
 
     xhr.send(data);
   };
-  
+
   const [statByEventIDResult, setStatByEventIDResult] = useState([]);
   const [uniquePeriod, setUniquePeriod] = useState([]);
   const [matchName, setMatchName] = useState("");
   const [summaryInfos, setSummaryInfos] = useState([]);
   const statByEventID = (eventId, matchName) => {
-    setFilteredData([])
+    setFilteredData([]);
     const data = JSON.stringify({});
 
     const xhr = new XMLHttpRequest();
@@ -141,12 +129,16 @@ const UserBetAnalysis = () => {
         const responseJson = JSON.parse(this.responseText);
         // console.log(responseJson, "Parsed response");
         setStatByEventIDResult(responseJson.data);
-        
-        setFilteredData(responseJson.data.filter(item => item.period === "all"))
+
+        setFilteredData(
+          responseJson.data.filter((item) => item.period === "all")
+        );
         setSelected("all");
-        const unique = [...new Set(responseJson.data.map(item => item.period))];
-        setUniquePeriod(unique)
-        
+        const unique = [
+          ...new Set(responseJson.data.map((item) => item.period)),
+        ];
+        setUniquePeriod(unique);
+
         setMatchName(matchName);
         console.log(responseMatches, "responseMatches");
         
@@ -200,13 +192,19 @@ const UserBetAnalysis = () => {
   const [selected, setSelected] = useState("");
 
   const selectedPeriod = (period) => {
-    setSelected(period); 
+    setSelected(period);
     if (period === "all") {
-      setFilteredData(statByEventIDResult.filter(item => item.period === "all"));  // Show all data
+      setFilteredData(
+        statByEventIDResult.filter((item) => item.period === "all")
+      ); // Show all data
     } else if (period === "1st") {
-      setFilteredData(statByEventIDResult.filter(item => item.period === "1st"));  // Filter by "1st" period
+      setFilteredData(
+        statByEventIDResult.filter((item) => item.period === "1st")
+      ); // Filter by "1st" period
     } else if (period === "2nd") {
-      setFilteredData(statByEventIDResult.filter(item => item.period === "2nd"));  // Filter by "2nd" period
+      setFilteredData(
+        statByEventIDResult.filter((item) => item.period === "2nd")
+      ); // Filter by "2nd" period
     }
   };
 
@@ -234,16 +232,17 @@ const UserBetAnalysis = () => {
     }
   };
 
-
-
+  if (isLoading) {
+    return <Spinner />;
+  }
   if (isLoading) {
     return <Spinner />;
   }
 
-
   return (
     <>
     {console.log(summaryInfos, "summary")}
+    {console.log(singleMatch, "singleMatch")}
     
     <Container style={{ marginTop: "80px" }}>
       <Row>
@@ -253,7 +252,7 @@ const UserBetAnalysis = () => {
       </Row>
       <Row>
         <Col xs={12} md={12}>
-        {matchBets && matchBets.length > 0 ? (<CarouselContainer/>) : (<>PIPPO</>)} 
+        {/* {matchBets && matchBets.length > 0 ? (<CarouselContainer/>) : (<>PIPPO</>)}  */}
 
         </Col>
       </Row>
@@ -285,40 +284,48 @@ const UserBetAnalysis = () => {
                                     </p> ) : (<p></p>) 
                                      }
 
-                                    <div className="d-flex">
-                                      <span
-                                        onClick={() => handleShow(_id)}
-                                        className="d-flex"
-                                        style={{ cursor: "pointer", height: "45px", width: "45px", border: "1px solid black"  }}
+                                      <div className="d-flex">
+                                        <span
+                                          onClick={() => handleShow(_id)}
+                                          className="d-flex"
+                                          style={{
+                                            cursor: "pointer",
+                                            height: "45px",
+                                            width: "45px",
+                                            border: "1px solid black",
+                                          }}
                                         >
-                                        <AiOutlineEdit className='m-auto' />
-                                      </span>
-                                      <span
-                                        className="text-danger d-flex"
-                                        style={{ cursor: "pointer", height: "45px", width: "45px", border: "1px solid black"  }}
-                                        onClick={() => deleteRealod(_id)}
+                                          <AiOutlineEdit className="m-auto" />
+                                        </span>
+                                        <span
+                                          className="text-danger d-flex"
+                                          style={{
+                                            cursor: "pointer",
+                                            height: "45px",
+                                            width: "45px",
+                                            border: "1px solid black",
+                                          }}
+                                          onClick={() => deleteRealod(_id)}
                                         >
-                                        <FaRegTrashAlt
-                                          className='m-auto'  
-                                        />
-                                      </span>
-                                    </div>
-                                  </>
-                                )}
-                              </div>
-                              <SingleMatch
-                                matchID={match._id}
-                                dateMatch={match.dateMatch}
-                                homeTeam={match.homeTeam}
-                                awayTeam={match.awayTeam}
-                                league={match.league}
-                                odds={match.odds}
-                                typeOfBet={match.typeOfBet}
-                                typeOfBet_choice={match.typeOfBet_choice}
-                                matchWin={match.matchWin}
-                                settermatchstats={getMatchStats}
-                              />
-                              {/* <Stack direction="horizontal" gap={2}>
+                                          <FaRegTrashAlt className="m-auto" />
+                                        </span>
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
+                                <SingleMatch
+                                  matchID={match._id}
+                                  dateMatch={match.dateMatch}
+                                  homeTeam={match.homeTeam}
+                                  awayTeam={match.awayTeam}
+                                  league={match.league}
+                                  odds={match.odds}
+                                  typeOfBet={match.typeOfBet}
+                                  typeOfBet_choice={match.typeOfBet_choice}
+                                  matchWin={match.matchWin}
+                                  settermatchstats={getMatchStats}
+                                />
+                                {/* <Stack direction="horizontal" gap={2}>
                                                                 <Badge pill className='ms-4 mt-2 p-2 border border-secondary text-secondary' bg="light" style={{cursor: "pointer"}} onClick={() => getMatchStats(match.dateMatch, match.homeTeam, match.awayTeam )}>
                                                                     Statistiche
                                                                 </Badge>
@@ -425,6 +432,7 @@ const UserBetAnalysis = () => {
           )}
         </Col>
         <Col sm={6} className="d-none d-sm-block">
+<h4>Summary info</h4>
 <h5>{matchName}</h5>
 {summaryInfos && summaryInfos.map((info, index) => (
   <div key={index}>
@@ -476,16 +484,14 @@ const UserBetAnalysis = () => {
     </Container>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title><b>Modifica:</b></Modal.Title>
+          <Modal.Title>
+            <b>Modifica:</b>
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedBetEdit ? (
             <>
-              {/* <p><b>Home Team:</b> {selectedMatchEdit.homeTeam}</p>
-              <p><b>Away Team:</b> {selectedMatchEdit.awayTeam}</p>
-              <p><b>Date:</b> {new Date(selectedMatchEdit.dateMatch).toLocaleDateString()}</p> */}
-              {/* {console.log("selectedBetEdit", selectedBetEdit)} */}
-              <MatchFormManualEdit selectedBetEdit={selectedBetEdit} />
+              <MatchFormManualEdit selectedBetEdit={selectedBetEdit} matchBets={matchBets} />
             </>
           ) : (
             <p>No match selected</p>

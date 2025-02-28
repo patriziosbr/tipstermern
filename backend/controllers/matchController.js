@@ -47,13 +47,13 @@ const setMatch = asyncHandler(async (req, res) => {
             homeTeam: match.homeTeam,
             awayTeam: match.awayTeam,
             league: match.league,
-            odds: match.odds,
+            odds: match.odds === 1 ? 1.00 : match.odds,
             typeOfBet: match.typeOfBet,
             typeOfBet_choice: match.typeOfBet_choice,
             user: req.user.id,
             tipster: match.tipster,
             matchWin: match.matchWin,
-            recognizedText: match.recognizedText 
+            recognizedText: match.recognizedText
         }))
     );
 

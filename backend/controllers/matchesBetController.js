@@ -55,11 +55,6 @@ const getMatchesBet = asyncHandler(async (req, res) => {
     res.status(200).json(reversedMatchBets);
 });
 
-
-
-
-
-
 //@desc set match
 //@route POST /api/match
 //@access Private
@@ -89,7 +84,7 @@ const setMatchesBet = asyncHandler(async (req, res) => {
         profitto = -parsePaid;
     }
     console.log(req.body.betPaid, "req.body.betPaid controller");
-    
+
     // Create a new MatchesBet record
     const matchBets = await MatchesBet.create({
         user: req.user.id,
@@ -109,8 +104,9 @@ const setMatchesBet = asyncHandler(async (req, res) => {
 //@desc update Goals
 //@route PUT/PATCH /api/matchesBet/:id
 //@access Private
-const updateUpdateEvent = asyncHandler(async (req, res) => {
-    const event = await Event.findById(req.params.id)
+const updateMatchBet = asyncHandler(async (req, res) => {
+    console.log(req.params, "req.body controller");
+    const event = await MatchesBet.findById(req.params.id)
     if(!event) {
         throw new Error("add event in url / event not found ")
     }
@@ -176,7 +172,7 @@ const getMaxWin = asyncHandler(async (req, res) => {
 module.exports = {
     getMatchesBet,
     setMatchesBet,
-    // updateEvent,
+    updateMatchBet,
     deleteMatchesBet,
     getMaxWin
 }
