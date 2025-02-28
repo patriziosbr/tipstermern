@@ -23,13 +23,14 @@ const Match = require("../model/matchModel")
 
 const getMatchesBet = asyncHandler(async (req, res) => {
     const matchBets = await MatchesBet.find().populate('matches');
+// console.log(matchBets, "matchBets controller");
 
     // Loop through each matchBet
     for (let matchBet of matchBets) {
         // Check if at least one matchWin is 2 (pending)
         const hasPendingMatch = matchBet.matches.some(match => match.matchWin === 2);
         matchBet.profit = 0
-
+        matchBet.totalWin = 0
         if (hasPendingMatch) {
             // If there's at least one pending match, set isWin to null
             matchBet.isWin = null;
@@ -39,10 +40,13 @@ const getMatchesBet = asyncHandler(async (req, res) => {
             
             if (allMatchesWin) {
                 matchBet.isWin = true; // All matches are won
+                matchBet.totalWin = matchBet.betPaid*matchBet.totalOdds
                 matchBet.profit = matchBet.totalWin - matchBet.betPaid
             } else {
                 matchBet.isWin = false; // At least one match is lost
                 matchBet.profit = -matchBet.betPaid
+                matchBet.totalWin = 0
+
             }
         }
 
