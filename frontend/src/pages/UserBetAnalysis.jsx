@@ -223,7 +223,7 @@ const UserBetAnalysis = () => {
     console.log(_id, updateParam);
     let data = { matchId: _id, body: updateParam };
     try {
-      await dispatch(updateMatch(data)); // Wait for delete to complete
+      await dispatch(updateMatch(data));
       dispatch(getMatchBets());
       toast.success("match aggiornato con succcesso");
     } catch (error) {
@@ -278,11 +278,9 @@ const UserBetAnalysis = () => {
                               <div className="d-flex justify-content-between">
                                 {matchIndex === 0 && (
                                   <>
-                                    { match.tipster?.value.nameTips ? (
-                                    <p> 
-                                      Tipster Name: <b><i>{match.tipster?.value.nameTips}</i></b>
-                                    </p> ) : (<p></p>) 
-                                     }
+                                    {JSON.stringify(match.tipster)} 
+                                    {/* // DA SISTAMRE STA COSA DEL TIPSTER NAME */}
+                                    {/* { match.tipster ? (<p> Tipster Name: <b><i>{match.tipster}</i></b></p> ) : (<p>{match.tipster?.value.nameTips}</p>)} */}
 
                                       <div className="d-flex">
                                         <span

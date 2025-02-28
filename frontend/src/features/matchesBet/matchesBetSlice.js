@@ -59,14 +59,14 @@ export const deleteMatchesBet = createAsyncThunk(
   }
 )
 
-// Update match bet
-export const updateMatchBet = createAsyncThunk(
+// Update scehdina
+export const  updateMatchBet = createAsyncThunk(
   'matchBets/update',
   async (data, thunkAPI) => {
-    debugger
+    debugger 
     try {
       const token = thunkAPI.getState().auth.user.token;
-      const matchId = data.matchId;
+      const matchId = data.matchId; // matchId = schedina id
       const matchData = { ...data.matchData };
       return await matchesBetService.updateMatchBet(matchId, matchData, token);
     } catch (error) {

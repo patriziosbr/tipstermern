@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { createMatch } from "../features/matches/matchSlice";
+import { updateMatch } from "../features/matches/matchSlice";
 import { createMatchesBet } from "../features/matchesBet/matchesBetSlice";
 import { updateMatchBet } from "../features/matchesBet/matchesBetSlice";
 import Form from "react-bootstrap/Form";
@@ -17,17 +17,16 @@ const MatchFormManualEdit = ({ selectedBetEdit, matchBets }) => {
   useEffect(() => {
     if (selectedBetEdit) {
       const selectedMatchEditTemp = selectedBetEdit;
-
+      console.log(selectedMatchEditTemp, "selectedMatchEditTemp");
+    
       // Create a new array to store updated matches
       const updatedMatches = selectedMatchEditTemp.matches.map(
         (single, index) => {
           const updatedSingle = {};
-
           // Iterate over the keys of each match
           Object.keys(single).forEach((key) => {
             // Update the key if it's not one of the excluded ones
             if (
-              key !== "_id" &&
               key !== "user" &&
               key !== "_v" &&
               key !== "createdAt" &&
@@ -40,22 +39,18 @@ const MatchFormManualEdit = ({ selectedBetEdit, matchBets }) => {
               updatedSingle[key] = single[key];
             }
           });
-
           return updatedSingle; // Return the updated match object
         }
       );
-      // console.log(selectedBetEdit, "selectedBetEdit");
-      // console.log(betPaid, "betPaid");
-
       // Update the formData and formBlocks state with the modified matches
       setFormData(
         updatedMatches.reduce((acc, match, index) => {
           // Destructure tipster from match and gather the rest of the fields
           const { tipster, ...rest } = match;
           const tipsterKey = `tipster${index}`
-          const manipulatedTipster = match[tipsterKey].value.nameTips;
+          const manipulatedTipster = match[tipsterKey]?.value?.nameTips !== undefined ? match[tipsterKey].value.nameTips : match[tipsterKey];
           // Return the merged object with the manipulated tipster field
-          return { ...acc, ...rest, [tipsterKey]: manipulatedTipster, betPaid: matchBets[0].betPaid };
+          return { ...acc, ...rest, [tipsterKey]: manipulatedTipster, betPaid: selectedMatchEditTemp.betPaid };
         }, {})
       )
       setFormBlocks(updatedMatches);
@@ -142,13 +137,9 @@ const MatchFormManualEdit = ({ selectedBetEdit, matchBets }) => {
     // }
 
     const matchesArray = [];
-    const totalMatches = Object.keys(formData).length / 16;
+    const totalMatches = Object.keys(formData).length / 15; //DARIV
 
     for (let i = 0; i < totalMatches; i++) {
-      const tipsterOption = formData[`tipster${i}`];
-      const tipsterObject = filteredOptions.find(
-        (option) => option.value.nameTips === tipsterOption
-      );
 
       matchesArray.push({
         matchDate: formData[`dateMatch${i}`],
@@ -158,38 +149,34 @@ const MatchFormManualEdit = ({ selectedBetEdit, matchBets }) => {
         typeOfBet: formData[`typeOfBet${i}`],
         typeOfBet_choice: formData[`typeOfBet_choice${i}`],
         odds: formData[`odds${i}`],
-        tipster: tipsterObject.value.id,
+        tipster: formData[`tipster${i}`],
         matchWin: formData[`matchWin${i}`] ?? 2,
-        betPaid: formData[`betPaid`],
+        matchId: formData[`_id${i}`],
+        betPaid: formData[`betPaid`]
       });
     }
 
-    let matchesBetData = {};
-    let matchesID = [];
-    let matchesWinLoss = [];
-    let totalOdds = [];
-    await dispatch(createMatch(matchesArray)).then((result) => {
-      result.payload.forEach((single) => {
-        matchesID.push(single._id);
-        matchesWinLoss.push(single.matchWin);
-        totalOdds.push(single.odds);
+    let scehdinaData = {
+      matchId: selectedBetEdit._id,
+      matchData: {
+        ...selectedBetEdit,
+        betPaid: formData.betPaid,
+      }
+    };
 
-        if (matchesWinLoss.includes(0)) {
-          matchesBetData = { matches: matchesID, isWin: 0 };
-        } else if (matchesWinLoss.includes(2)) {
-          matchesBetData = { matches: matchesID, isWin: null };
-        } else {
-          matchesBetData = { matches: matchesID, isWin: true };
-        }
-      });
+    await dispatch(updateMatch(matchesArray)).then((result) => {
+      // console.log(result, "result");
     });
-
-    const totalOddsRes = totalOdds.reduce((prev, next) => prev * next);
-    matchesBetData.totalOdds = totalOddsRes;
-    matchesBetData.betPaid = formData[`betPaid`];
-
-    await dispatch(updateMatchBet(matchesBetData)).then(() => {
-      toast.success("Schedina Creata!");
+    
+    await dispatch(updateMatchBet(scehdinaData)).then((result) => {
+      console.log(result, "result");
+      if (result.error) {
+        toast.error("Errore nella creazione della schedina!");
+        return;
+      } else {
+        toast.success("Schedina Aggiornata!");
+        
+      }
     });
   };
 
@@ -206,16 +193,24 @@ const MatchFormManualEdit = ({ selectedBetEdit, matchBets }) => {
               </span>
             </h6>
             <Form.Group className="mb-3">
-              <Form.Label>Tipster</Form.Label>
-              <Form.Control
-                type="text"
-                name={`tipster${index}`}
-                value={formData[`tipster${index}`] || ""}
-                onChange={onChange}
-                className={errors[`tipster${index}`] ? "border-danger" : ""}
-                list={`tipster${index}`}
-              />
-              <datalist id={`tipster${index}`}>{renderOptions()}</datalist>
+
+              <Form.Label>Giocata id: {formData[`_id${index}`]}</Form.Label><br/>
+              <Form.Label>Tipster: 
+                {/* {JSON.stringify(formData[`tipster${index}`])} */}
+              </Form.Label>
+
+              {/* <>
+                <Form.Control
+                  type="text"
+                  name={`tipster${index}`}
+                  value={formData[`tipster${index}`] || ""}
+                  onChange={onChange}
+                  className={errors[`tipster${index}`] ? "border-danger" : ""}
+                  list={`tipster${index}`}
+                />
+                <datalist id={`tipster${index}`}>{renderOptions()}</datalist>
+              </> */}
+
             </Form.Group>
             <div style={{ display: "flex" }}>
               <Form.Group className="mb-3 me-2">

@@ -18,8 +18,8 @@ import GeminiForm from '../components/GeminiForm'
 function OcrBoard() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
-  const { foods, isLoading, isError, message } = useSelector((state) => state.foods);
+  // const { user } = useSelector((state) => state.auth);
+  const { user, isLoading, isError, message } = useSelector((state) => state.auth);
   const [recognizedText, setRecognizedText] = useState('');
   const [aIText, setAIText] = useState([]);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -36,7 +36,7 @@ function OcrBoard() {
     if (!user) {
       navigate('/login');
     }
-  }, [user, navigate, isError, message, dispatch, foods]);
+  }, [user, navigate, isError, message, dispatch]);
 
   const handleImageUpload = (image) => {
     setSelectedImage(image);

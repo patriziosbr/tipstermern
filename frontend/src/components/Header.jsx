@@ -36,7 +36,7 @@ function Header() {
           <Nav className="me-auto">
             {/* {user && (<NavLink style={{marginRight:'10px', textDecoration:"none"}} className="text-dark" activeclassname="active" to='/events'>Events</NavLink> )} 
             {user && (<NavLink style={{marginRight:'10px', textDecoration:"none"}} className="text-dark" activeclassname="active" to='/CalendarTest'>CalendarTest</NavLink> )}  */}
-            {user && (<NavLink style={{marginRight:'10px', textDecoration:"none"}} className="text-dark" activeclassname="active" to='/foodformdashboard'>Add food</NavLink> )} 
+            {/* {user && (<NavLink style={{marginRight:'10px', textDecoration:"none"}} className="text-dark" activeclassname="active" to='/foodformdashboard'>Add food</NavLink> )}  */}
             {user && (<NavLink style={{marginRight:'10px', textDecoration:"none"}} className="text-dark" activeclassname="active" to='/ocrboard'>OCR</NavLink> )}
             {user && (<NavLink style={{marginRight:'10px', textDecoration:"none"}} className="text-dark" activeclassname="active" to='/userbetanalysis'>UserBetAnalysis</NavLink> )}
             {/* {user && (<NavLink style={{marginRight:'10px', textDecoration:"none"}} className="text-dark" activeclassname="active" to='/events'>event</NavLink> )}  */}

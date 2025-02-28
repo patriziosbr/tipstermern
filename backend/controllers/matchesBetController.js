@@ -59,71 +59,77 @@ const getMatchesBet = asyncHandler(async (req, res) => {
 //@route POST /api/match
 //@access Private
 const setMatchesBet = asyncHandler(async (req, res) => {
-    // Ensure req.body is an array
+    // Ensure req.body.matches is an array.
     const matches = Array.isArray(req.body.matches) ? req.body.matches : [req.body.matches];
-
+  
     if (!matches || matches.length < 1) {
-        res.status(400);
-        throw new Error("add matches is missing");
+      res.status(400);
+      throw new Error("add matches is missing");
     }
-    
-    let TempOdds = parseFloat(req.body.totalOdds);
-    let vincita, profitto;
-    let parsePaid = parseFloat(req.body.betPaid);
-    // console.log(typeof TempOdds, "typeof TempOdds");
-    // console.log(TempOdds, "TempOdds");
-    
-    if (req.body.isWin) {
-        vincita = TempOdds.toFixed(2) * parsePaid;
-        profitto = vincita - parsePaid;
-    } else if (req.body.isWin === null || req.body.isWin === undefined || req.body.isWin === 2) {
-        vincita = TempOdds.toFixed(2) * parsePaid;
-        profitto = null;
-    } else {
-        vincita = 0;
-        profitto = -parsePaid;
-    }
-    console.log(req.body.betPaid, "req.body.betPaid controller");
-
-    // Create a new MatchesBet record
-    const matchBets = await MatchesBet.create({
-        user: req.user.id,
-        matches: matches, // Will be filled after match creation
-        isWin: req.body.isWin,
-        betPaid: req.body.betPaid ? req.body.betPaid : 1,
-        totalOdds: TempOdds,
-        totalWin: vincita,
-        profit: profitto
+  
+    // Calculate bet details using the helper.
+    const { totalOdds, totalWin, profit } = calculateBetDetails({
+      totalOdds: req.body.totalOdds,
+      betPaid: req.body.betPaid,
+      isWin: req.body.isWin
     });
-
-    // console.log(matchBets, "matchBets");
-    
+  
+    // Create a new MatchesBet record.
+    const matchBets = await MatchesBet.create({
+      user: req.user.id,
+      matches: matches,
+      isWin: req.body.isWin,
+      betPaid: req.body.betPaid ? req.body.betPaid : 1,
+      totalOdds,
+      totalWin,
+      profit
+    });
+  
     res.status(200).json(matchBets);
-});
+  });
 
 //@desc update Goals
 //@route PUT/PATCH /api/matchesBet/:id
 //@access Private
 const updateMatchBet = asyncHandler(async (req, res) => {
-    console.log(req.params, "req.body controller");
-    const event = await MatchesBet.findById(req.params.id)
-    if(!event) {
-        throw new Error("add event in url / event not found ")
-    }
+  const event = await MatchesBet.findById(req.params.id);
+  if (!event) {
+    res.status(404);
+    throw new Error("Event not found");
+  }
 
-    //check user
-    if(!req.user) {
-        res.status(401)
-        throw new Error("user not found")
-    }
-    //check if user is owner
-    if(event.user.toString() !== req.user.id){
-        res.status(401)
-        throw new Error("user not authorized")
-    }
-    const updatedEvent= await Event.findByIdAndUpdate(req.params.id, req.body, {new : true})
-    res.status(200).json(updatedEvent)
-})
+  // Check user authentication and ownership.
+  if (!req.user) {
+    res.status(401);
+    throw new Error("User not found");
+  }
+  if (event.user.toString() !== req.user.id) {
+    res.status(401);
+    throw new Error("User not authorized");
+  }
+
+  // Merge current event data with the incoming update data.
+  const updatedData = { ...event.toObject(), ...req.body };
+
+
+  // If one of these fields is updated, recalculate bet details.
+  if (req.body.totalOdds || req.body.betPaid || req.body.isWin !== undefined) {
+    const betDetails = calculateBetDetails({
+      totalOdds: updatedData.totalOdds,
+      betPaid: updatedData.betPaid,
+      isWin: updatedData.isWin
+    });
+    updatedData.totalOdds = betDetails.totalOdds;
+    updatedData.totalWin = betDetails.totalWin;
+    updatedData.profit = betDetails.profit;
+  }
+
+  console.log("run");
+
+
+  const updatedEvent = await MatchesBet.findByIdAndUpdate(req.params.id, updatedData, { new: true });
+  res.status(200).json(updatedEvent);
+});
 
 //@desc cancel matchBet in cascade match
 //@route DELETE /api/event/:id
@@ -167,6 +173,29 @@ const getMaxWin = asyncHandler(async (req, res) => {
         res.status(200).json(maxWin)
     })
 
+
+ // HELPER FUNCTIONS   
+ const calculateBetDetails = ({ totalOdds, betPaid, isWin }) => {
+    const parsedOdds = parseFloat(totalOdds);
+    const parsedPaid = parseFloat(betPaid);
+    // Fix the odds to 2 decimal places.
+    const computedOdds = parseFloat(parsedOdds.toFixed(2));
+    let totalWin, profit;
+  
+    if (isWin === 1) { // Win condition
+      totalWin = computedOdds * parsedPaid;
+      profit = totalWin - parsedPaid;
+    } else if (isWin === 2 || isWin === null || isWin === undefined) { 
+      // Pending or undefined result
+      totalWin = computedOdds * parsedPaid;
+      profit = null;
+    } else { // Loss condition (assumes isWin is 0 or any falsy value other than 2)
+      totalWin = 0;
+      profit = -parsedPaid;
+    }
+  
+    return { totalOdds: parsedOdds, totalWin, profit };
+  };
 
 
 module.exports = {

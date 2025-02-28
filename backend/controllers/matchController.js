@@ -65,7 +65,7 @@ const setMatch = asyncHandler(async (req, res) => {
 //@access Private
 const updateMatch = asyncHandler(async (req, res) => {
     // console.log(req, "req");
-    console.log(req.body, "req.body");
+    // console.log(req.body, "req.body");
     
     const match = await Match.findById(req.params.id)
     if(!match) {

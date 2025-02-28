@@ -43,17 +43,33 @@ export const createMatch = createAsyncThunk(
 export const updateMatch = createAsyncThunk(
   'match/update',
   async (data, thunkAPI) => {
-    console.log(data, "data");
-    
-    try {
-      const token = thunkAPI.getState().auth.user.token;
-      const matchId = data.matchId;
-      const matchData = data.body;
-      return await matchService.updateMatch(matchId, matchData, token);
-    } catch (error) {
-      const message =
-        (error.response?.data?.message) || error.message || error.toString();
-      return thunkAPI.rejectWithValue(message);
+    if(data.body) {
+      try {
+        const token = thunkAPI.getState().auth.user.token;
+        const matchId = data.matchId;
+        const matchData = data.body;
+        return await matchService.updateMatch(matchId, matchData, token);
+      } catch (error) {
+        const message =
+          (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+      }
+    } else {
+      try {
+        const token = thunkAPI.getState().auth.user.token;
+        const updatedMatches = await Promise.all(
+          data.map(async (match) => {
+            const matchId = match.matchId;
+            const matchData = match;
+            return await matchService.updateMatch(matchId, matchData, token);
+          })
+        );
+        return updatedMatches;
+      } catch (error) {
+        const message =
+          (error.response?.data?.message) || error.message || error.toString();
+        return thunkAPI.rejectWithValue(message);
+      }
     }
   }
 );
