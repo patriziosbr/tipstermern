@@ -18,7 +18,7 @@ function Dashboard() {
   return (
     <>
     <br />
-        <h1>HELLO</h1>
+    <br />
     <br />
         <h1>HELLO</h1>
     </>

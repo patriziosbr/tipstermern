@@ -1,4 +1,4 @@
-import { FaSignInAlt, FaSignOutAlt, FaUser, FaTelegram } from 'react-icons/fa'
+import { FaSignInAlt, FaSignOutAlt, FaUser, FaDollarSign } from 'react-icons/fa'
 import { useNavigate, NavLink } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { logout, reset } from '../features/auth/authSlice'
@@ -25,11 +25,11 @@ function Header() {
     <Container fluid className="bg-body-tertiary" style={{position:"fixed", top:"0", height:'60px', zIndex: 999}}>
       <Navbar className='container' >
         <Navbar.Brand href='/' className='d-flex align-items-center'>
-            <FaTelegram className="mr-1"/>
-            Notify
+            <FaDollarSign className="mr-1"/>
+            Budget
           </Navbar.Brand>
           <Nav className="me-auto">
-            {user && (<NavLink style={{marginRight:'10px', textDecoration:"none"}} className="text-dark" activeclassname="active" to='/ocrboard'>OCR</NavLink> )}
+            {user && (<NavLink style={{marginRight:'10px', textDecoration:"none"}} className="text-dark" activeclassname="active" to='/notaSpese'>Nota Spese form</NavLink> )}
           </Nav>
           <Navbar.Toggle />
           <Navbar.Collapse className="justify-content-end">
