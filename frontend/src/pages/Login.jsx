@@ -9,10 +9,6 @@ import Spinner from '../components/Spinner'
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-
-import {AiOutlineLock} from 'react-icons/ai'
 
 function Login() {
   const [formData, setFormData] = useState({

@@ -3,16 +3,11 @@ import { useNavigate, NavLink } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { logout, reset } from '../features/auth/authSlice'
 
-
-
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 
-// import Button from 'react-bootstrap/Button';
-// import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
-// import Row from 'react-bootstrap/Row';
-// import Col from 'react-bootstrap/Col';
+
 
 function Header() {
   const navigate = useNavigate()
@@ -34,12 +29,7 @@ function Header() {
             Notify
           </Navbar.Brand>
           <Nav className="me-auto">
-            {/* {user && (<NavLink style={{marginRight:'10px', textDecoration:"none"}} className="text-dark" activeclassname="active" to='/events'>Events</NavLink> )} 
-            {user && (<NavLink style={{marginRight:'10px', textDecoration:"none"}} className="text-dark" activeclassname="active" to='/CalendarTest'>CalendarTest</NavLink> )}  */}
-            {/* {user && (<NavLink style={{marginRight:'10px', textDecoration:"none"}} className="text-dark" activeclassname="active" to='/foodformdashboard'>Add food</NavLink> )}  */}
             {user && (<NavLink style={{marginRight:'10px', textDecoration:"none"}} className="text-dark" activeclassname="active" to='/ocrboard'>OCR</NavLink> )}
-            {user && (<NavLink style={{marginRight:'10px', textDecoration:"none"}} className="text-dark" activeclassname="active" to='/userbetanalysis'>UserBetAnalysis</NavLink> )}
-            {/* {user && (<NavLink style={{marginRight:'10px', textDecoration:"none"}} className="text-dark" activeclassname="active" to='/events'>event</NavLink> )}  */}
           </Nav>
           <Navbar.Toggle />
           <Navbar.Collapse className="justify-content-end">

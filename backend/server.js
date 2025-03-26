@@ -26,12 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:false}))
 
 app.use('/api/goals', require('./routes/goalRoutes'))
-app.use('/api/foods', require('./routes/foodRoutes'))
-app.use('/api/users', require('./routes/userRoutes'))
-app.use('/api/event', require('./routes/eventRoutes'))
-app.use('/api/scheduledEvent', require('./routes/scheduledEventsRoutes'))
-app.use('/api/match', require('./routes/matchRoutes'))
-app.use('/api/matchesBet', require('./routes/matchesBetRoutes'))
+
 
 //serve frontend
 if (process.env.NODE_ENV === 'production') {
