@@ -1,7 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit'
 import authReducer from '../features/auth/authSlice'
 import notaSpeseReducer from '../features/notaSpese/notaSpeseSlice'
-import schedaSpeseReducer from '../features/schedaSpese/SchedaSpeseSlice'
+import schedaSpeseReducer from '../features/schedaSpese/schedaSpeseSlice'
 
 
 
