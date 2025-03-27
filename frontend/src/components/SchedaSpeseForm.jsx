@@ -1,10 +1,10 @@
-import { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import Container from 'react-bootstrap/Container'
-import { createNotaSpese } from '../features/notaSpese/notaSpeseSlice'
+import { createSchedaSpese } from '../features/schedaSpese/schedaSpeseSlice'
 
 function SchedaSpeseForm() {
   const [formData, setFormData] = useState({
@@ -36,8 +36,16 @@ function SchedaSpeseForm() {
         condivisoCon
       }
 
-      console.log(schedaSpeseFormData)
-      dispatch(createSchedaSpeseForm(schedaSpeseFormData))
+      dispatch(createSchedaSpese(schedaSpeseFormData))
+      .unwrap()
+      .then((response) => {
+        console.log("Success Response:", response); // Debugging
+        toast.success("Nota spese creata con successo!");
+      })
+      .catch((error) => {
+        console.error("Error Response:", error); // Debugging
+        toast.error(error.message || "Errore nella creazione della nota spese");
+      });
     }
   }
 

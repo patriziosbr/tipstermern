@@ -10,7 +10,7 @@ const initialState = {
 };
 
 // Get schedaSpese
-export const getSchedaSpeseService = createAsyncThunk(
+export const getSchedaSpese = createAsyncThunk(
   'schedaSpese/get',
   async (_, thunkAPI) => {
     try {
@@ -25,7 +25,7 @@ export const getSchedaSpeseService = createAsyncThunk(
 );
 
 // Create a new match
-export const createSchedaSpeseService = createAsyncThunk(
+export const createSchedaSpese = createAsyncThunk(
   'schedaSpese/create',
   async (schedaSpeseData, thunkAPI) => {
     try {
@@ -82,15 +82,15 @@ const schedaSpeseSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(createSchedaSpeseService.pending, (state) => {
+      .addCase(createSchedaSpese.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(createSchedaSpeseService.fulfilled, (state, action) => {
+      .addCase(createSchedaSpese.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
         state.schedaSpese.push(action.payload);
       })
-      .addCase(createSchedaSpeseService.rejected, (state, action) => {
+      .addCase(createSchedaSpese.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
@@ -111,15 +111,15 @@ const schedaSpeseSlice = createSlice({
       //   state.isError = true;
       //   state.message = action.payload;
       // })
-      .addCase(getSchedaSpeseService.pending, (state) => {
+      .addCase(getSchedaSpese.pending, (state) => {
         state.isLoading = true;
       })
-      .addCase(getSchedaSpeseService.fulfilled, (state, action) => {
+      .addCase(getSchedaSpese.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
         state.schedaSpese = action.payload;
       })
-      .addCase(getSchedaSpeseService.rejected, (state, action) => {
+      .addCase(getSchedaSpese.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;

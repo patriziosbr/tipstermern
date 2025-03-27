@@ -27,7 +27,6 @@ const createNotaSpese = async (notaSpeseData, token) => {
       Authorization: `Bearer ${token}`,
     },
   }
-
   const response = await axios.post(API_URL, notaSpeseData, config)
 
   return response.data
