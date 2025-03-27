@@ -8,7 +8,7 @@ const notaSpeseSchema = mongoose.Schema(
         },
         testo: {
             type: String,
-            require: [true, 'Please add a text value']
+            require: [true, 'Please add a testo value']
         },
         inserimentoData: {
             type: Date,
@@ -19,7 +19,7 @@ const notaSpeseSchema = mongoose.Schema(
             require: [true, 'Please add a importo value']
         },
         categoria_id: {
-            type: mongoose.Schema.Types.ObjectId,
+            type: Array,
             ref: 'Categoria'
         },
     },

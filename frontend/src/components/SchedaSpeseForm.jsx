@@ -6,15 +6,14 @@ import Form from 'react-bootstrap/Form'
 import Container from 'react-bootstrap/Container'
 import { createNotaSpese } from '../features/notaSpese/notaSpeseSlice'
 
-function NotaSpeseForm() {
+function SchedaSpeseForm() {
   const [formData, setFormData] = useState({
-    testo: '',
+    titolo: '',
     inserimentoData: '',
-    importo: '',
-    categoria_id: [],
+    condivisoCon: []
   })
-
-  const { testo, inserimentoData, importo, categoria_id } = formData
+  
+  const { titolo, inserimentoData, condivisoCon } = formData
 
   const dispatch = useDispatch()
 
@@ -28,21 +27,17 @@ function NotaSpeseForm() {
   const onSubmit = (e) => {
     e.preventDefault()
 
-    if (!testo || !importo) {
+    if (!titolo) {
       toast.error('Please fill in all required fields')
     } else {
-      const categoriesArray = ['53cb6b9b4f4ddef1ad47f943', "53cb6b9b4f4ddef1ad47f911"];
-      if(categoria_id.length > 0) categoriesArray.push(categoria_id);
-      const notaSpeseData = {
-        testo,
+      const schedaSpeseFormData = {
+        titolo,
         inserimentoData: inserimentoData || new Date().toISOString(),
-        importo: parseFloat(importo),
-        categoria_id: categoriesArray ?? [],
+        condivisoCon
       }
 
-      // Dispatch action to save notaSpeseData
-      console.log(notaSpeseData)
-      dispatch(createNotaSpese(notaSpeseData))
+      console.log(schedaSpeseFormData)
+      dispatch(createSchedaSpeseForm(schedaSpeseFormData))
     }
   }
 
@@ -50,13 +45,13 @@ function NotaSpeseForm() {
     <Container>
       <Form className="mb-3" onSubmit={onSubmit}>
         <Form.Group className="mb-3">
-          <Form.Label>Testo</Form.Label>
+          <Form.Label>titolo</Form.Label>
           <Form.Control
             type="text"
-            id="testo"
-            name="testo"
-            value={testo}
-            placeholder="Enter text"
+            id="titolo"
+            name="titolo"
+            value={titolo}
+            placeholder="GENNAIO"
             onChange={onChange}
             required
           />
@@ -71,26 +66,15 @@ function NotaSpeseForm() {
             onChange={onChange}
           />
         </Form.Group>
+
         <Form.Group className="mb-3">
-          <Form.Label>Importo</Form.Label>
-          <Form.Control
-            type="number"
-            id="importo"
-            name="importo"
-            value={importo}
-            placeholder="Enter amount"
-            onChange={onChange}
-            required
-          />
-        </Form.Group>
-        <Form.Group className="mb-3">
-          <Form.Label>Categoria ID</Form.Label>
+          <Form.Label>Condiviso con</Form.Label>
           <Form.Control
             type="text"
-            id="categoria_id"
-            name="categoria_id"
-            value={categoria_id}
-            placeholder="Enter category ID"
+            id="condivisoCon"
+            name="condivisoCon"
+            value={condivisoCon}
+            placeholder="Condiviso con"
             onChange={onChange}
           />
         </Form.Group>
@@ -102,4 +86,4 @@ function NotaSpeseForm() {
   )
 }
 
-export default NotaSpeseForm
+export default SchedaSpeseForm

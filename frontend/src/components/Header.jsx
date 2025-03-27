@@ -30,6 +30,7 @@ function Header() {
           </Navbar.Brand>
           <Nav className="me-auto">
             {user && (<NavLink style={{marginRight:'10px', textDecoration:"none"}} className="text-dark" activeclassname="active" to='/notaSpese'>Nota Spese form</NavLink> )}
+            {user && (<NavLink style={{marginRight:'10px', textDecoration:"none"}} className="text-dark" activeclassname="active" to='/DashboardNotaSpese'>Dashboard lista note</NavLink> )}
           </Nav>
           <Navbar.Toggle />
           <Navbar.Collapse className="justify-content-end">

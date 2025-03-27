@@ -14,16 +14,25 @@ const getNotaSpese = asyncHandler(async (req, res) => {
 //@route POST /api/goals
 //@access Private
 const setNotaSpese = asyncHandler(async (req, res) => {
-    if(!req.body.text) {
+    
+    if(!req.body.testo) {
         // return res.status(400).json({data: "add text in body"}) //soluzione mia con return
         res.status(400)
-        throw new Error("add text in body") //restituisce l'errore in html per ricevere un json fare middleware 
+        throw new Error("add testo in body") //restituisce l'errore in html per ricevere un json fare middleware 
     }
-    const goal = await NotaSpese.create({ 
-        text: req.body.text,
+    if(!req.body.importo) {
+        res.status(400)
+        throw new Error("add importo in body") 
+    }
+    const notaSpese = await NotaSpese.create({ 
+        testo: req.body.testo,
+        inserimentoData: req.body.inserimentoData,
+        importo: req.body.importo,
+        categoria_id: req.body.categoria_id,
         user: req.user.id
     })
-    res.status(200).json(goal)
+
+    res.status(200).json(notaSpese)
 })
 
 // //@desc update Goals

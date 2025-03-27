@@ -17,9 +17,6 @@ function Dashboard() {
 
   return (
     <>
-    <br />
-    <br />
-    <br />
         <h1>HELLO</h1>
     </>
   )
