@@ -39,46 +39,38 @@ export const createSchedaSpese = createAsyncThunk(
   }
 );
 
-// Update match
-// export const updateBudget = createAsyncThunk(
-//   'match/update',
-//   async (data, thunkAPI) => {
-//     if(data.body) {
-//       try {
-//         const token = thunkAPI.getState().auth.user.token;
-//         const matchId = data.matchId;
-//         const matchData = data.body;
-//         return await budgetService.updateBudget(matchId, matchData, token);
-//       } catch (error) {
-//         const message =
-//           (error.response?.data?.message) || error.message || error.toString();
-//         return thunkAPI.rejectWithValue(message);
-//       }
-//     } else {
-//       try {
-//         const token = thunkAPI.getState().auth.user.token;
-//         const updatedBudgetes = await Promise.all(
-//           data.map(async (match) => {
-//             const matchId = match.matchId;
-//             const matchData = match;
-//             return await budgetService.updateBudget(matchId, matchData, token);
-//           })
-//         );
-//         return updatedBudgetes;
-//       } catch (error) {
-//         const message =
-//           (error.response?.data?.message) || error.message || error.toString();
-//         return thunkAPI.rejectWithValue(message);
-//       }
-//     }
-//   }
-// );
+export const updateSchedaSpese = createAsyncThunk(
+  'schedaSpese/update',
+  async (data, thunkAPI) => {
+    console.log(data, "---------------"); // Debugging
+    try {
+      const state = thunkAPI.getState();
+      const token = state.auth.user.token;
+      const schedaId = data.schedaId;
+      // Extract the new nota's ID from the response
+      const newNotaSpeseId = data.notaSpeseData._id;
+      
+      // Build the payload to push the new notaSpese ID into the array
+      const updatePayload = {notaSpese: newNotaSpeseId };
+
+      return await schedaSpeseService.updateSchedaSpese(schedaId, updatePayload, token);
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+
 
 const schedaSpeseSlice = createSlice({
   name: 'schedaSpese',
   initialState,
   reducers: {
-    reset: (state) => initialState,
+    reset: () => ({ ...initialState }),
   },
   extraReducers: (builder) => {
     builder
@@ -95,22 +87,22 @@ const schedaSpeseSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
       })
-      // .addCase(updateBudget.pending, (state) => {
-      //   state.isLoading = true;
-      // })
-      // .addCase(updateBudget.fulfilled, (state, action) => {
-      //   state.isLoading = false;
-      //   state.isSuccess = true;
-      //   const index = state.matches.findIndex((match) => match._id === action.payload._id);
-      //   if (index !== -1) {
-      //     state.matches[index] = action.payload;
-      //   }
-      // })
-      // .addCase(updateBudget.rejected, (state, action) => {
-      //   state.isLoading = false;
-      //   state.isError = true;
-      //   state.message = action.payload;
-      // })
+      .addCase(updateSchedaSpese.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateSchedaSpese.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        const index = state.schedaSpese.findIndex((match) => match._id === action.payload._id);
+        if (index !== -1) {
+          state.schedaSpese[index] = action.payload;
+        }
+      })
+      .addCase(updateSchedaSpese.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+      })
       .addCase(getSchedaSpese.pending, (state) => {
         state.isLoading = true;
       })
@@ -118,11 +110,14 @@ const schedaSpeseSlice = createSlice({
         state.isLoading = false;
         state.isSuccess = true;
         state.schedaSpese = action.payload;
+        state.isError = false;
+        state.message = '';
       })
       .addCase(getSchedaSpese.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
-        state.message = action.payload;
+        state.message = action.payload || 'Failed to fetch expense records';
+        state.schedaSpese = []; 
       });
   },
 });

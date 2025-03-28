@@ -33,19 +33,20 @@ const createSchedaSpese = async (schedaSpeseData, token) => {
 }
 
 // // Update events
-// const updateNotaSpese = async (BudgetId, BudgetData, token) => {
-//   const config = {
-//     headers: {
-//       Authorization: `Bearer ${token}`,
-//     },
-//   }
-//   const response = await axios.put(API_URL + BudgetId, BudgetData, config)
-//   return response.data
-// }
+const updateSchedaSpese = async (schedaId, schedaData, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+  const response = await axios.put(API_URL + schedaId, schedaData, config)
+  return response.data
+}
 
 const schedaSpeseService = {
   getSchedaSpese,
   createSchedaSpese,
+  updateSchedaSpese
 }
 
 export default schedaSpeseService

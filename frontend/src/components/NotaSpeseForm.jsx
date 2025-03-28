@@ -5,8 +5,9 @@ import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import Container from 'react-bootstrap/Container'
 import { createNotaSpese } from '../features/notaSpese/notaSpeseSlice'
+import { updateSchedaSpese } from '../features/schedaSpese/schedaSpeseSlice'
 
-function NotaSpeseForm() {
+function NotaSpeseForm({ onSuccess, schedaId }) {
   const [formData, setFormData] = useState({
     testo: '',
     inserimentoData: '',
@@ -41,8 +42,22 @@ function NotaSpeseForm() {
       }
 
       // Dispatch action to save notaSpeseData
-      console.log(notaSpeseData)
       dispatch(createNotaSpese(notaSpeseData))
+      .unwrap()
+      .then((response) => {
+        console.log("schedaId:", schedaId); // Debugging
+        toast.success("Nota spese creata con successo!");
+        let data = {
+          notaSpeseData: response,
+          schedaId: schedaId,
+        } 
+        dispatch(updateSchedaSpese(data)); // Update the schedaSpese with the new notaSpese
+ 
+      })
+      .catch((error) => {
+        console.error("Error Response:", error); // Debugging
+        toast.error(error.message || "Errore nella creazione della nota spese");
+      });
     }
   }
 

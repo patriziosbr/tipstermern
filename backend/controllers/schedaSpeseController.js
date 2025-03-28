@@ -6,8 +6,8 @@ const User = require("../model/userModel")
 //@route GET /api/goals
 //@access Private
 const getSchedaSpese = asyncHandler(async (req, res) => {
-    const goals = await SchedaSpese.find({user: req.user.id})
-    res.status(200).json(goals)
+    const schedaSpese = await SchedaSpese.find({user: req.user.id})
+    res.status(200).json(schedaSpese.reverse())
 })
 
 //@desc set goals
@@ -35,25 +35,33 @@ const setSchedaSpese = asyncHandler(async (req, res) => {
 // //@desc update Goals
 // //@route PUT/PATCH /api/goals/:id
 // //@access Private
-// const updateGoal = asyncHandler(async (req, res) => {
-//     const goal = await Goal.findById(req.params.id)
-//     if(!goal) {
-//         throw new Error("add text in body")
-//     }
+const updateSchedaSpese = asyncHandler(async (req, res) => {
+    const scheda = await SchedaSpese.findById(req.params.id)
+    if(!scheda) {
+        throw new Error("scheda not found")
+    }
+    //check user
+    if(!req.user) {
+        res.status(401)
+        throw new Error("user not found")
+    }
+    //check if user is owner
+    if(scheda.user.toString() !== req.user.id){
+        res.status(401)
+        throw new Error("user not authorized")
+    }
+    console.log(req.body, "---body----BE----------") // Debugging;
+    console.log(req.params, "------params-BE----------") // Debugging;
+    
+    const updatedScheda = await SchedaSpese.findByIdAndUpdate(req.params.id, req.body, {new : true})
+    // const updatedScheda = await SchedaSpese.findByIdAndUpdate(
+    //     schedaId,
+    //     updatePayload, // This uses $push to update the notaSpese array
+    //     { new: true }
+    //   );
+    res.status(200).json(updatedScheda)
+})
 
-//     //check user
-//     if(!req.user) {
-//         res.status(401)
-//         throw new Error("user not found")
-//     }
-//     //check if user is owner
-//     if(goal.user.toString() !== req.user.id){
-//         res.status(401)
-//         throw new Error("user not authorized")
-//     }
-//     const updatedGoal = await Goal.findByIdAndUpdate(req.params.id, req.body, {new : true})
-//     res.status(200).json(updatedGoal)
-// })
 // //@desc cancel goals
 // //@route DELETE /api/goals/:id
 // //@access Private
@@ -81,6 +89,6 @@ const setSchedaSpese = asyncHandler(async (req, res) => {
 module.exports = {
     getSchedaSpese,
     setSchedaSpese,
-    // updateGoal,
+    updateSchedaSpese
     // deleteGoal
 }

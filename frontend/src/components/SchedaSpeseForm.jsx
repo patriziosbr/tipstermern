@@ -6,7 +6,8 @@ import Form from 'react-bootstrap/Form'
 import Container from 'react-bootstrap/Container'
 import { createSchedaSpese } from '../features/schedaSpese/schedaSpeseSlice'
 
-function SchedaSpeseForm() {
+function SchedaSpeseForm({onSuccess}) {
+
   const [formData, setFormData] = useState({
     titolo: '',
     inserimentoData: '',
@@ -41,6 +42,7 @@ function SchedaSpeseForm() {
       .then((response) => {
         console.log("Success Response:", response); // Debugging
         toast.success("Nota spese creata con successo!");
+        onSuccess(); 
       })
       .catch((error) => {
         console.error("Error Response:", error); // Debugging
@@ -49,7 +51,7 @@ function SchedaSpeseForm() {
     }
   }
 
-  return (
+  return (    
     <Container>
       <Form className="mb-3" onSubmit={onSubmit}>
         <Form.Group className="mb-3">
