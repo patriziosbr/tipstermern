@@ -30,38 +30,38 @@ function SingleScheda({scheda}) {
                 </Button>
             </div>
             <div>
-            <table>
-    {scheda.notaSpese.length > 0 ? (
-        <>
-            <thead>
-                <tr>
-                    <th>Titolo</th>
-                    <th>Importo</th>
-                    <th>Data Inserimento</th>
-                </tr>
-            </thead>
-            <tbody>
-                {scheda.notaSpese.map((notaSpesa) => (
-                    notaSpesa && (
-                        <tr key={notaSpesa._id}>
-                            <td>{notaSpesa.testo}</td>
-                            <td>{notaSpesa.importo}</td>
-                            <td>{parseDate(notaSpesa.inserimentoData)}</td>
-                        </tr>
-                    )
-                ))}
-            </tbody>
-        </>
-    ) : (
-        <thead>
-            <tr>
-                <td colSpan="3">Nessuna nota spese presente</td>
-            </tr>
-        </thead>
-    )}
-</table>
-
+                <table>
+                    {scheda.notaSpese.length > 0 ? (
+                        <>
+                            <thead>
+                                <tr>
+                                    <th>Titolo</th>
+                                    <th>Importo</th>
+                                    <th>Data Inserimento</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {scheda.notaSpese.map((notaSpesa) => (
+                                    notaSpesa && (
+                                        <tr key={notaSpesa._id}>
+                                            <td>{notaSpesa.testo}</td>
+                                            <td>{notaSpesa.importo}</td>
+                                            <td>{parseDate(notaSpesa.inserimentoData)}</td>
+                                        </tr>
+                                    )
+                                ))}
+                            </tbody>
+                        </>
+                    ) : (
+                        <thead>
+                            <tr>
+                                <td colSpan="3">Nessuna nota spese presente</td>
+                            </tr>
+                        </thead>
+                    )}
+            </table>
             </div>
+            
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                 <Modal.Title><b>Crea Nota in {scheda.titolo}</b></Modal.Title>

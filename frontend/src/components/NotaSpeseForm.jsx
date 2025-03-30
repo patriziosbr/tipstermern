@@ -26,7 +26,7 @@ function NotaSpeseForm({ onSuccess, schedaId }) {
     }))
   }
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault()
 
     if (!testo || !importo) {
@@ -41,28 +41,31 @@ function NotaSpeseForm({ onSuccess, schedaId }) {
         categoria_id: categoriesArray ?? [],
       }
 
-      // Dispatch action to save notaSpeseData
-      dispatch(createNotaSpese(notaSpeseData))
-      .unwrap()
-      .then((response) => {
-        console.log("schedaId:", schedaId); // Debugging
-        toast.success("Nota spese creata con successo!");
-        let data = {
-          notaSpeseData: response,
-          schedaId: schedaId,
-        } 
-        dispatch(updateSchedaSpese(data)); // Update the schedaSpese with the new notaSpese
-        
-      })
-      .then(() => {
-        dispatch(getSchedaSpese()); // Fetch the updated schedaSpese list
-      })
-      .catch((error) => {
-        console.error("Error Response:", error); // Debugging
-        toast.error(error.message || "Errore nella creazione della nota spese");
-      });
+      fetchDispatch(notaSpeseData)
     }
   }
+
+  const fetchDispatch = async (notaSpeseData) => {
+    try {
+      // Dispatch action to create a new nota spese
+      const response = await dispatch(createNotaSpese(notaSpeseData)).unwrap();
+  
+      toast.success("Nota spese creata con successo!");
+  
+      // Update schedaSpese with new notaSpese
+      const data = {
+        notaSpeseData: response,
+        schedaId: schedaId,
+      };
+      dispatch(updateSchedaSpese(data));
+  
+      // Fetch updated schedaSpese list
+      dispatch(getSchedaSpese());
+    } catch (error) {
+      console.error("Error Response:", error);
+      toast.error(error.message || "Errore nella creazione della nota spese");
+    }
+  };
 
   return (
     <Container>
