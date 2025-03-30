@@ -1,15 +1,36 @@
 const asyncHandler = require('express-async-handler')
 const SchedaSpese = require("../model/schedaSpeseModel")
 const User = require("../model/userModel")
+const NotaSpese = require("../model/notaSpeseModel")
 
 //@desc get goals
 //@route GET /api/goals
 //@access Private
 const getSchedaSpese = asyncHandler(async (req, res) => {
-    const schedaSpese = await SchedaSpese.find({user: req.user.id})
-    
-    res.status(200).json(schedaSpese.reverse())
-})
+    // Find all schedaSpese for the current user
+    const schedaSpese = await SchedaSpese.find({ user: req.user.id });
+  
+    // Map over each scheda and resolve the promises for each notaSpese
+    const schedaSpeseWithNota = await Promise.all(
+      schedaSpese.map(async (scheda) => {
+        console.log(scheda.notaSpese, "scheda.notaSpese"); // Debugging
+        
+        // Resolve all the NotaSpese promises for the current scheda
+        const notaSpeseResolved = await Promise.all(
+          scheda.notaSpese.map((notaId) => {
+            return NotaSpese.findById(notaId);
+          })
+        );
+        
+        // You might want to attach the resolved notaSpese to the scheda
+        return { ...scheda.toObject(), notaSpese: notaSpeseResolved };
+      })
+    );
+  
+    console.log(schedaSpeseWithNota, "schedaSpeseWithNota"); // Debugging
+  
+    res.status(200).json(schedaSpeseWithNota.reverse());
+  });
 
 //@desc set goals
 //@route POST /api/goals

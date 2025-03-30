@@ -5,7 +5,7 @@ import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import Container from 'react-bootstrap/Container'
 import { createNotaSpese } from '../features/notaSpese/notaSpeseSlice'
-import { updateSchedaSpese } from '../features/schedaSpese/schedaSpeseSlice'
+import { getSchedaSpese, updateSchedaSpese } from '../features/schedaSpese/schedaSpeseSlice'
 
 function NotaSpeseForm({ onSuccess, schedaId }) {
   const [formData, setFormData] = useState({
@@ -52,7 +52,10 @@ function NotaSpeseForm({ onSuccess, schedaId }) {
           schedaId: schedaId,
         } 
         dispatch(updateSchedaSpese(data)); // Update the schedaSpese with the new notaSpese
- 
+        
+      })
+      .then(() => {
+        dispatch(getSchedaSpese()); // Fetch the updated schedaSpese list
       })
       .catch((error) => {
         console.error("Error Response:", error); // Debugging

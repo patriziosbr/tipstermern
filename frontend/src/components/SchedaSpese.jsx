@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux";
-import { getSchedaSpese, reset } from "../features/schedaSpese/schedaSpeseSlice";
+import { getSchedaSpese } from "../features/schedaSpese/schedaSpeseSlice";
 import SingleScheda from "./SingleScheda";
 
 function SchedaSpese() {

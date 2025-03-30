@@ -12,6 +12,14 @@ function SingleScheda({scheda}) {
         setShow(false); // Reset Redux state when closing the modal
     };
 
+    const parseDate = (dateString) => { 
+        const date = new Date(dateString);
+        const day = String(date.getUTCDate()).padStart(2, '0'); 
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); 
+        const year = date.getUTCFullYear();
+        const formattedDate = `${day} ${month} ${year}`;
+        return formattedDate
+    }  
     return (
         <>
             <div className='d-flex justify-content-between mb-4'>
@@ -22,8 +30,37 @@ function SingleScheda({scheda}) {
                 </Button>
             </div>
             <div>
-            {JSON.stringify(scheda.notaSpese)}
-                {/*  TODO GET DELLA LISTA DELLE NOTE SPESE BASATE SULL LITA di ID  */}
+            <table>
+    {scheda.notaSpese.length > 0 ? (
+        <>
+            <thead>
+                <tr>
+                    <th>Titolo</th>
+                    <th>Importo</th>
+                    <th>Data Inserimento</th>
+                </tr>
+            </thead>
+            <tbody>
+                {scheda.notaSpese.map((notaSpesa) => (
+                    notaSpesa && (
+                        <tr key={notaSpesa._id}>
+                            <td>{notaSpesa.testo}</td>
+                            <td>{notaSpesa.importo}</td>
+                            <td>{parseDate(notaSpesa.inserimentoData)}</td>
+                        </tr>
+                    )
+                ))}
+            </tbody>
+        </>
+    ) : (
+        <thead>
+            <tr>
+                <td colSpan="3">Nessuna nota spese presente</td>
+            </tr>
+        </thead>
+    )}
+</table>
+
             </div>
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
