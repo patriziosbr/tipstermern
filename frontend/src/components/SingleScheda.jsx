@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import NotaSpeseForm from '../components/NotaSpeseForm';
+import Spinner from '../components/Spinner'
 
 function SingleScheda({scheda}) {
     const [show, setShow] = useState(false);
@@ -42,9 +43,9 @@ function SingleScheda({scheda}) {
                             </thead>
                             <tbody>
                                 {scheda.notaSpese.map((notaSpesa) => (
-                                    notaSpesa && (
+                                    notaSpesa.testo && (
                                         <tr key={notaSpesa._id}>
-                                            <td>{notaSpesa.testo}</td>
+                                            <td>{notaSpesa.testo ? notaSpesa.testo : null}</td>
                                             <td>{notaSpesa.importo}</td>
                                             <td>{parseDate(notaSpesa.inserimentoData)}</td>
                                         </tr>
@@ -61,7 +62,7 @@ function SingleScheda({scheda}) {
                     )}
             </table>
             </div>
-            
+
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                 <Modal.Title><b>Crea Nota in {scheda.titolo}</b></Modal.Title>
