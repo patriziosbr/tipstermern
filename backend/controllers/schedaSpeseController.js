@@ -7,6 +7,7 @@ const User = require("../model/userModel")
 //@access Private
 const getSchedaSpese = asyncHandler(async (req, res) => {
     const schedaSpese = await SchedaSpese.find({user: req.user.id})
+    
     res.status(200).json(schedaSpese.reverse())
 })
 
@@ -36,31 +37,38 @@ const setSchedaSpese = asyncHandler(async (req, res) => {
 // //@route PUT/PATCH /api/goals/:id
 // //@access Private
 const updateSchedaSpese = asyncHandler(async (req, res) => {
-    const scheda = await SchedaSpese.findById(req.params.id)
-    if(!scheda) {
-        throw new Error("scheda not found")
+    const { notaSpese } = req.body;
+    const schedaId = req.params.id;
+
+    // Find the schedaSpese by ID
+    const scheda = await SchedaSpese.findById(schedaId);
+    if (!scheda) {
+        res.status(404);
+        throw new Error("Scheda not found");
     }
-    //check user
-    if(!req.user) {
-        res.status(401)
-        throw new Error("user not found")
+
+    // Check if user exists
+    if (!req.user) {
+        res.status(401);
+        throw new Error("User not found");
     }
-    //check if user is owner
-    if(scheda.user.toString() !== req.user.id){
-        res.status(401)
-        throw new Error("user not authorized")
+
+    // Check if the user is the owner
+    if (scheda.user.toString() !== req.user.id) {
+        res.status(403);
+        throw new Error("User not authorized");
     }
-    console.log(req.body, "---body----BE----------") // Debugging;
-    console.log(req.params, "------params-BE----------") // Debugging;
-    
-    const updatedScheda = await SchedaSpese.findByIdAndUpdate(req.params.id, req.body, {new : true})
-    // const updatedScheda = await SchedaSpese.findByIdAndUpdate(
-    //     schedaId,
-    //     updatePayload, // This uses $push to update the notaSpese array
-    //     { new: true }
-    //   );
-    res.status(200).json(updatedScheda)
-})
+
+    // Update and push the new notaSpese entry
+    const updatedScheda = await SchedaSpese.findByIdAndUpdate(
+        schedaId,
+        { $push: { notaSpese } }, // Assumes `notaSpese` is a valid ObjectId or array
+        { new: true, runValidators: true }
+    );
+
+    res.status(200).json(updatedScheda);
+});
+
 
 // //@desc cancel goals
 // //@route DELETE /api/goals/:id
