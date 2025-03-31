@@ -13,7 +13,7 @@ const getSchedaSpese = asyncHandler(async (req, res) => {
     // Map over each scheda and resolve the promises for each notaSpese
     const schedaSpeseWithNota = await Promise.all(
       schedaSpese.map(async (scheda) => {
-        console.log(scheda.notaSpese, "scheda.notaSpese"); // Debugging
+        // console.log(scheda.notaSpese, "scheda.notaSpese"); // Debugging
         
         // Resolve all the NotaSpese promises for the current scheda
         const notaSpeseResolved = await Promise.all(
@@ -27,7 +27,7 @@ const getSchedaSpese = asyncHandler(async (req, res) => {
       })
     );
   
-    console.log(schedaSpeseWithNota, "schedaSpeseWithNota"); // Debugging
+    // console.log(schedaSpeseWithNota, "schedaSpeseWithNota"); // Debugging
   
     res.status(200).json(schedaSpeseWithNota.reverse());
   });

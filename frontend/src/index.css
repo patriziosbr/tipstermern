@@ -32,3 +32,11 @@
     transform: rotate(360deg);
   }
 }
+
+.threedots:after {
+  content: "\2807";
+  font-size: 30px;
+}
+a:has(.threedots) {
+  text-decoration: none;
+}

@@ -1,17 +1,63 @@
 import { FaPlus } from 'react-icons/fa';
+import { FaRegCheckCircle } from "react-icons/fa";
+import { FaRegTimesCircle } from "react-icons/fa";
+
 import { useState } from 'react'
-import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import NotaSpeseForm from '../components/NotaSpeseForm';
-import Spinner from '../components/Spinner'
+import Table from 'react-bootstrap/Table';
+import React from "react";
+import Dropdown from "react-bootstrap/Dropdown";
+import useLongPress from "./utils/useLongPress.js";
+import { useDispatch } from 'react-redux'
 
 function SingleScheda({scheda}) {
     const [show, setShow] = useState(false);
     const handleShow = () => setShow(true);
-
     const handleClose = () => {
         setShow(false); // Reset Redux state when closing the modal
     };
+    const [longPressCount, setlongPressCount] = useState(0)
+
+    const [formData, setFormData] = useState({
+    titolo: scheda.titolo,
+    })
+    
+    const { titolo } = formData
+
+    const dispatch = useDispatch()
+
+    const onChange = (e) => {
+        setFormData((prevState) => ({
+            ...prevState,
+            [e.target.name]: e.target.value,
+        }))
+    }
+
+    const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
+        <a
+          href=""
+          ref={ref}
+          onClick={e => {
+            e.preventDefault();
+            onClick(e);
+          }}
+        >
+          {children}
+          <span className="threedots" />
+        </a>
+      ));
+      
+      const onLongPress = () => {
+        console.log('longpress is triggered');
+        setlongPressCount(longPressCount + 1)
+      };
+
+      const defaultOptions = {
+        shouldPreventDefault: true,
+        delay: 500,
+      };
+      const longPressEvent = useLongPress(onLongPress, defaultOptions);
 
     const parseDate = (dateString) => { 
         const date = new Date(dateString);
@@ -23,22 +69,42 @@ function SingleScheda({scheda}) {
     }  
     return (
         <>
-            <div className='d-flex justify-content-between mb-4'>
-                <h5 className='mb-0 align-self-center'>{scheda.titolo}</h5>
-                <Button variant="link" className='d-flex align-items-center' onClick={handleShow}>
+            <div className='d-flex justify-content-between align-items-center'>
+                {longPressCount < 1 && <h5 className='mb-0 align-self-center'  {...longPressEvent} >{scheda.titolo}</h5>}
+                {longPressCount > 0 && 
+                    <div>
+                        <input name="titolo" type='text' value={titolo} onChange={onChange}/> 
+                        <span className='mx-4'><FaRegCheckCircle size={30}/></span>
+                        <span><FaRegTimesCircle size={30} onClick={() => setlongPressCount(longPressCount - 1)} /></span>
+                    </div>
+                    }
+                <Dropdown>
+                <Dropdown.Toggle as={CustomToggle} />
+                    <Dropdown.Menu size="sm" title="">
+                    <Dropdown.Header>Options</Dropdown.Header>
+                    <Dropdown.Item>
+                    <span variant="secondary" className='d-flex align-items-center' onClick={handleShow}>
+                        <FaPlus className="me-2"/>Add nota spese
+                    </span>
+                    </Dropdown.Item>
+                    <Dropdown.Item>erty</Dropdown.Item>
+                    <Dropdown.Item>hnjm</Dropdown.Item>
+                </Dropdown.Menu>
+                </Dropdown>
+                {/* <Button variant="link" className='d-flex align-items-center' onClick={handleShow}>
                     <FaPlus className="me-2"/>
                     Add nota spese
-                </Button>
+                </Button> */}
             </div>
             <div>
-                <table>
+                <Table striped className="mb-5">
                     {scheda.notaSpese.length > 0 ? (
                         <>
                             <thead>
                                 <tr>
                                     <th>Titolo</th>
+                                    <th>Data</th>
                                     <th>Importo</th>
-                                    <th>Data Inserimento</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -46,8 +112,9 @@ function SingleScheda({scheda}) {
                                     notaSpesa.testo && (
                                         <tr key={notaSpesa._id}>
                                             <td>{notaSpesa.testo ? notaSpesa.testo : null}</td>
-                                            <td>{notaSpesa.importo}</td>
                                             <td>{parseDate(notaSpesa.inserimentoData)}</td>
+                                            <td>{notaSpesa.importo}</td>
+  
                                         </tr>
                                     )
                                 ))}
@@ -60,7 +127,7 @@ function SingleScheda({scheda}) {
                             </tr>
                         </thead>
                     )}
-            </table>
+            </Table>
             </div>
 
             <Modal show={show} onHide={handleClose}>

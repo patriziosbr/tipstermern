@@ -57,10 +57,9 @@ function NotaSpeseForm({ onSuccess, schedaId }) {
         notaSpeseData: response,
         schedaId: schedaId,
       };
-      dispatch(updateSchedaSpese(data));
-  
-      // Fetch updated schedaSpese list
-      dispatch(getSchedaSpese());
+      await dispatch(updateSchedaSpese(data)).unwrap();
+      await dispatch(getSchedaSpese()).unwrap();
+      
     } catch (error) {
       console.error("Error Response:", error);
       toast.error(error.message || "Errore nella creazione della nota spese");
