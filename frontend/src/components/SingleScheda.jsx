@@ -10,6 +10,8 @@ import React from "react";
 import Dropdown from "react-bootstrap/Dropdown";
 import useLongPress from "./utils/useLongPress.js";
 import { useDispatch } from 'react-redux'
+import { getSchedaSpese, updateSchedaSpese } from '../features/schedaSpese/schedaSpeseSlice'
+
 
 function SingleScheda({scheda}) {
     const [show, setShow] = useState(false);
@@ -59,7 +61,15 @@ function SingleScheda({scheda}) {
       };
       const longPressEvent = useLongPress(onLongPress, defaultOptions);
 
-    const parseDate = (dateString) => { 
+      const updateSchedataTitolo = async () => {
+        const updatePayload = { titolo: titolo };
+        console.log(scheda._id, '--------------scheda'); // Debugging
+        
+        await dispatch(updateSchedaSpese({ schedaId: scheda._id, ...updatePayload })).unwrap();
+        await dispatch(getSchedaSpese()).unwrap();
+      }
+    
+      const parseDate = (dateString) => { 
         const date = new Date(dateString);
         const day = String(date.getUTCDate()).padStart(2, '0'); 
         const month = String(date.getUTCMonth() + 1).padStart(2, '0'); 
@@ -67,6 +77,8 @@ function SingleScheda({scheda}) {
         const formattedDate = `${day} ${month} ${year}`;
         return formattedDate
     }  
+
+
     return (
         <>
             <div className='d-flex justify-content-between align-items-center'>
@@ -74,7 +86,7 @@ function SingleScheda({scheda}) {
                 {longPressCount > 0 && 
                     <div>
                         <input name="titolo" type='text' value={titolo} onChange={onChange}/> 
-                        <span className='mx-4'><FaRegCheckCircle size={30}/></span>
+                        <span className='mx-4'><FaRegCheckCircle size={30} onClick={()=> updateSchedataTitolo()}/></span>
                         <span><FaRegTimesCircle size={30} onClick={() => setlongPressCount(longPressCount - 1)} /></span>
                     </div>
                     }

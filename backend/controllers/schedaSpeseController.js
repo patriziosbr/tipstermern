@@ -58,7 +58,8 @@ const setSchedaSpese = asyncHandler(async (req, res) => {
 // //@route PUT/PATCH /api/goals/:id
 // //@access Private
 const updateSchedaSpese = asyncHandler(async (req, res) => {
-    const { notaSpese } = req.body;
+    // console.log(req.body, '--------------updateSchedaSpese req.body'); // Debugging
+    const { notaSpese, titolo } = req.body;
     const schedaId = req.params.id;
 
     // Find the schedaSpese by ID
@@ -80,12 +81,23 @@ const updateSchedaSpese = asyncHandler(async (req, res) => {
         throw new Error("User not authorized");
     }
 
+    // Construct the update object dynamically
+    const updateFields = {};
+    if (notaSpese) {
+        updateFields.$push = { notaSpese };
+    }
+    if (titolo) {
+        updateFields.$set = { titolo };
+    }
+    // console.log(updateFields, '--------------updateFields'); // Debugging
     // Update and push the new notaSpese entry
     const updatedScheda = await SchedaSpese.findByIdAndUpdate(
         schedaId,
-        { $push: { notaSpese } }, // Assumes `notaSpese` is a valid ObjectId or array
+        updateFields,
         { new: true, runValidators: true }
     );
+    
+    // console.log(updatedScheda, '--------------updatedScheda'); // Debugging
 
     res.status(200).json(updatedScheda);
 });

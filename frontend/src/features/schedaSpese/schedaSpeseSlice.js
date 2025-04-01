@@ -42,16 +42,21 @@ export const createSchedaSpese = createAsyncThunk(
 export const updateSchedaSpese = createAsyncThunk(
   'schedaSpese/update',
   async (data, thunkAPI) => {
-    console.log(data, "---------------"); // Debugging
+    // console.log(data, "-------------schedaSpeseschedaSpese----------"); // Debugging
     try {
       const state = thunkAPI.getState();
       const token = state.auth.user.token;
       const schedaId = data.schedaId;
       // Extract the new nota's ID from the response
-      const newNotaSpeseId = data.notaSpeseData._id;
+      const updatePayload = {}
+      if(data.notaSpeseData) updatePayload.notaSpese = data.notaSpeseData._id ;
+      if(data.titolo) updatePayload.titolo = data.titolo;
       
       // Build the payload to push the new notaSpese ID into the array
-      const updatePayload = {notaSpese: newNotaSpeseId };
+      // const updatePayload = {
+      //   notaSpese: newNotaSpeseId,
+      //   titolo: data.titolo,
+      //  };
 
       return await schedaSpeseService.updateSchedaSpese(schedaId, updatePayload, token);
     } catch (error) {
@@ -93,7 +98,8 @@ const schedaSpeseSlice = createSlice({
       .addCase(updateSchedaSpese.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        const index = state.schedaSpese.findIndex((match) => match._id === action.payload._id);
+        const index = state.schedaSpese.findIndex((scheda) => scheda._id === action.payload._id);
+        console.log(action.payload, '--------------action.payload'); // Debugging
         if (index !== -1) {
           state.schedaSpese[index] = action.payload;
         }
