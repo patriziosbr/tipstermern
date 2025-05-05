@@ -1,6 +1,7 @@
 import { FaPlus } from 'react-icons/fa';
 import { FaRegCheckCircle } from "react-icons/fa";
 import { FaRegTimesCircle } from "react-icons/fa";
+import { FaUserPlus } from "react-icons/fa";
 
 import { useState } from 'react'
 import Modal from 'react-bootstrap/Modal';
@@ -15,7 +16,11 @@ import { getSchedaSpese, updateSchedaSpese } from '../features/schedaSpese/sched
 
 function SingleScheda({scheda}) {
     const [show, setShow] = useState(false);
+    const [showUser, setShowUser] = useState(false);
+
     const handleShow = () => setShow(true);
+
+    const handleShow2 = (param) => param === "showUser" ? setShowUser(true) : setShow(true);
     const handleClose = () => {
         setShow(false); // Reset Redux state when closing the modal
     };
@@ -99,7 +104,11 @@ function SingleScheda({scheda}) {
                         <FaPlus className="me-2"/>Add nota spese
                     </span>
                     </Dropdown.Item>
-                    <Dropdown.Item>erty</Dropdown.Item>
+                    <Dropdown.Item>
+                    <span variant="secondary" className='d-flex align-items-center' onClick={()=>handleShow2("showUser")}>
+                        <FaUserPlus className="me-2"/>Condividi
+                    </span>
+                    </Dropdown.Item>
                     <Dropdown.Item>hnjm</Dropdown.Item>
                 </Dropdown.Menu>
                 </Dropdown>
@@ -145,6 +154,14 @@ function SingleScheda({scheda}) {
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
                 <Modal.Title><b>Crea Nota in {scheda.titolo}</b></Modal.Title>
+                </Modal.Header>
+                <Modal.Body>            
+                    <NotaSpeseForm onSuccess={handleClose} schedaId={scheda._id} />
+                </Modal.Body>
+            </Modal>
+            <Modal show={showUser}  onHide={() => setShowUser(false)}>
+                <Modal.Header closeButton>
+                <Modal.Title><b>Aggiungi utente in {scheda.titolo}</b></Modal.Title>
                 </Modal.Header>
                 <Modal.Body>            
                     <NotaSpeseForm onSuccess={handleClose} schedaId={scheda._id} />

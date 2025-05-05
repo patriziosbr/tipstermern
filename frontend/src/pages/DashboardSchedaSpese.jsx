@@ -53,18 +53,3 @@ function DashboardSchedaSpese() {
 }
 
 export default DashboardSchedaSpese
-
-
-{/* <Dropdown>
-<Dropdown.Toggle as={CustomToggle} />
-  <Dropdown.Menu size="sm" title="">
-  <Dropdown.Header>Options</Dropdown.Header>
-  <Dropdown.Item>
-    <Button variant="secondary" className='d-flex align-items-center' onClick={handleShow}>
-      <FaPlus className="me-2"/>Add Scheda
-    </Button>
-  </Dropdown.Item>
-  <Dropdown.Item>erty</Dropdown.Item>
-  <Dropdown.Item>hnjm</Dropdown.Item>
-</Dropdown.Menu>
-</Dropdown> */}
