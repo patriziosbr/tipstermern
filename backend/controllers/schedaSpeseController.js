@@ -61,7 +61,7 @@ const setSchedaSpese = asyncHandler(async (req, res) => {
             secure: true, // true for 465, false for other ports
             auth: {
                 user: "tommasoversetto@gmail.com",
-                pass: "fdhordyppzvvkfaw",
+                pass:  process.env.GOOGLE_SMTP_PASS,
             },
         });
         // Get the sender's full user information to access their email

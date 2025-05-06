@@ -115,7 +115,7 @@ function SingleScheda({scheda}) {
                     <Dropdown.Header>Options</Dropdown.Header>
                     <Dropdown.Item>
                     <span variant="secondary" className='d-flex align-items-center' onClick={()=>handleShow("")}>
-                        <FaPlus className="me-2"/>Add nota spese
+                        <FaPlus className="me-2"/>Nuova nota spese
                     </span>
                     </Dropdown.Item>
                     <Dropdown.Item>
@@ -154,7 +154,7 @@ function SingleScheda({scheda}) {
                     ) : (
                         <thead>
                             <tr>
-                                <td colSpan="3">Nessuna nota spese presente</td>
+                                <td role="button" colSpan="3" onClick={()=>handleShow("")}>Nessuna nota spese presente</td>
                             </tr>
                         </thead>
                     )}
