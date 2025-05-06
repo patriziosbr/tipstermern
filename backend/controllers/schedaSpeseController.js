@@ -28,9 +28,7 @@ const getSchedaSpese = asyncHandler(async (req, res) => {
         return { ...scheda.toObject(), notaSpese: notaSpeseResolved };
       })
     );
-  
-    // console.log(schedaSpeseWithNota, "schedaSpeseWithNota"); // Debugging
-  
+
     res.status(200).json(schedaSpeseWithNota.reverse());
   });
 
@@ -51,7 +49,6 @@ const setSchedaSpese = asyncHandler(async (req, res) => {
         condivisoCon: req.body.condivisoCon,
         user: req.user.id
     })
-    console.log(req.body.condivisoCon, '--------------CONDIVISOOO'); // Debugging
 
     if(req.body.condivisoCon.length > 0) {
         // Create a test account or replace with real credentials.
@@ -66,7 +63,6 @@ const setSchedaSpese = asyncHandler(async (req, res) => {
         });
         // Get the sender's full user information to access their email
         const sender = await User.findById(req.user.id);
-        console.log(sender, '--------------sender'); // Debugging
 
         try {
             const info = await transporter.sendMail({
@@ -87,7 +83,7 @@ const setSchedaSpese = asyncHandler(async (req, res) => {
     res.status(200).json(notaSpese)
 })
 
-// //@desc update Goals
+// //@desc update schedaSpese
 // //@route PUT/PATCH /api/goals/:id
 // //@access Private
 const updateSchedaSpese = asyncHandler(async (req, res) => {
@@ -136,33 +132,32 @@ const updateSchedaSpese = asyncHandler(async (req, res) => {
 });
 
 
-// //@desc cancel goals
-// //@route DELETE /api/goals/:id
+// //@desc cancel SchedaSpese
+// //@route DELETE /api/schedaSpese/:id
 // //@access Private
-// const deleteGoal = asyncHandler(async (req, res) => {
-//     const goal = await Goal.findById(req.params.id);
-//     if(!goal) {
-//         throw new Error("goal not found")
-//     }
-
-//     //check user
-//     if(!req.user) {
-//         res.status(401)
-//         throw new Error("user not found")
-//     }
-//     //check if user is owner
-//     if(goal.user.toString() !== req.user.id){
-//         res.status(401)
-//         throw new Error("user not authorized")
-//     }
-//     // await Goal.findByIdAndDelete(req.params.id) //soluzione mia al volo rifaccio la query 
-//     await goal.deleteOne(); //remove() is not a function ??
-//     res.status(200).json({id:req.params.id}) //porta in FE solo ID dell'elemento eliminato 
-// })
+const deleteSchedaSpese = asyncHandler(async (req, res) => {
+    const schedaSpese = await SchedaSpese.findById(req.params.id);
+    if(!schedaSpese) {
+        throw new Error("goal not found")
+    }
+    //check user
+    if(!req.user) {
+        res.status(401)
+        throw new Error("user not found")
+    }
+    //check if user is owner
+    if(schedaSpese.user.toString() !== req.user.id){
+        res.status(401)
+        throw new Error("user not authorized")
+    }
+    // await Goal.findByIdAndDelete(req.params.id) //soluzione mia al volo rifaccio la query 
+    await schedaSpese.deleteOne(); //remove() is not a function ??
+    res.status(200).json({id:req.params.id}) //porta in FE solo ID dell'elemento eliminato 
+})
 
 module.exports = {
     getSchedaSpese,
     setSchedaSpese,
-    updateSchedaSpese
-    // deleteGoal
+    updateSchedaSpese,
+    deleteSchedaSpese
 }

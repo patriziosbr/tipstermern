@@ -69,6 +69,21 @@ export const updateSchedaSpese = createAsyncThunk(
   }
 );
 
+// Delete SchedaSpese
+export const deleteSchedaSpese = createAsyncThunk(
+  'schedaSpese/delete',
+  async (schedaId, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      return await schedaSpeseService.deleteSchedaSpese(schedaId, token);
+    } catch (error) {
+      const message =
+        (error.response?.data?.message) || error.message || error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 
 
 const schedaSpeseSlice = createSlice({
@@ -124,6 +139,22 @@ const schedaSpeseSlice = createSlice({
         state.isError = true;
         state.message = action.payload || 'Failed to fetch expense records';
         state.schedaSpese = []; 
+      })
+      .addCase(deleteSchedaSpese.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deleteSchedaSpese.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        // Remove the deleted scheda from the array
+        state.schedaSpese = state.schedaSpese.filter(
+          (scheda) => scheda._id !== action.payload.id
+        );
+      })
+      .addCase(deleteSchedaSpese.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
       });
   },
 });

@@ -2,7 +2,9 @@ import { FaPlus } from 'react-icons/fa';
 import { FaRegCheckCircle } from "react-icons/fa";
 import { FaRegTimesCircle } from "react-icons/fa";
 import { FaUserPlus } from "react-icons/fa";
+import { FaTrash } from "react-icons/fa";
 
+import Button from 'react-bootstrap/Button'
 import { useState } from 'react'
 import Modal from 'react-bootstrap/Modal';
 import NotaSpeseForm from '../components/NotaSpeseForm';
@@ -11,7 +13,7 @@ import React from "react";
 import Dropdown from "react-bootstrap/Dropdown";
 import useLongPress from "./utils/useLongPress.js";
 import { useDispatch } from 'react-redux'
-import { getSchedaSpese, updateSchedaSpese } from '../features/schedaSpese/schedaSpeseSlice'
+import { getSchedaSpese, updateSchedaSpese, deleteSchedaSpese } from '../features/schedaSpese/schedaSpeseSlice'
 
 
 function SingleScheda({scheda}) {
@@ -23,21 +25,22 @@ function SingleScheda({scheda}) {
     // };
 
     const [modalState, setModalState] = useState({
-        showCreaNotaModal: false,
-        showShareModal: false,
+        creaNotaModal: false,
+        shareModal: false,
+        deleteModal: false,
     });
 
-    const handleShow = (param) => {
+    const handleShow = (modalType) => {
         setModalState((prevState) => ({
             ...prevState,
-            [param === "showShare" ? "showShareModal" : "showCreaNotaModal"]: true,
+            [modalType]: true,
         }));
     };
     
-    const handleClose = (param) => {
+    const handleClose = (modalType) => {
         setModalState((prevState) => ({
             ...prevState,
-            [param === "hideShare" ? "showShareModal" : "showCreaNotaModal"]: false,
+            [modalType]: false,
         }));
     };
 
@@ -114,16 +117,20 @@ function SingleScheda({scheda}) {
                     <Dropdown.Menu size="sm" title="">
                     <Dropdown.Header>Options</Dropdown.Header>
                     <Dropdown.Item>
-                    <span variant="secondary" className='d-flex align-items-center' onClick={()=>handleShow("")}>
+                    <span variant="secondary" className='d-flex align-items-center' onClick={()=>handleShow("creaNotaModal")}>
                         <FaPlus className="me-2"/>Nuova nota spese
                     </span>
                     </Dropdown.Item>
                     <Dropdown.Item>
-                    <span variant="secondary" className='d-flex align-items-center' onClick={()=>handleShow("showShare")}>
+                    <span variant="secondary" className='d-flex align-items-center' onClick={()=>handleShow("shareModal")}>
                         <FaUserPlus className="me-2"/>Condividi
                     </span>
                     </Dropdown.Item>
-                    <Dropdown.Item>hnjm</Dropdown.Item>
+                    <Dropdown.Item>
+                    <span variant="error" className='d-flex align-items-center text-danger' onClick={()=>handleShow("deleteModal")}>
+                        <FaTrash className="me-2"/>Elimina
+                    </span>
+                    </Dropdown.Item>
                 </Dropdown.Menu>
                 </Dropdown>
             </div>
@@ -154,14 +161,14 @@ function SingleScheda({scheda}) {
                     ) : (
                         <thead>
                             <tr>
-                                <td role="button" colSpan="3" onClick={()=>handleShow("")}>Nessuna nota spese presente</td>
+                                <td role="button" colSpan="3" onClick={()=>handleShow("creaNotaModal")}>Nessuna nota spese presente</td>
                             </tr>
                         </thead>
                     )}
             </Table>
             </div>
 
-            <Modal show={modalState.showCreaNotaModal} onHide={() => handleClose("")}>
+            <Modal show={modalState.creaNotaModal} onHide={() => handleClose("creaNotaModal")}>
                 <Modal.Header closeButton>
                 <Modal.Title><b>Crea Nota in {scheda.titolo}</b></Modal.Title>
                 </Modal.Header>
@@ -169,13 +176,30 @@ function SingleScheda({scheda}) {
                     <NotaSpeseForm onSuccess={handleClose} schedaId={scheda._id} />
                 </Modal.Body>
             </Modal>
-            <Modal show={modalState.showShareModal} onHide={() => handleClose("hideShare")}>
+
+            <Modal show={modalState.shareModal} onHide={() => handleClose("shareModal")}>
                 <Modal.Header closeButton>
                 <Modal.Title><b>Aggiungi utente in {scheda.titolo}</b></Modal.Title>
                 </Modal.Header>
                 <Modal.Body>            
                     {/* TODO SINGLE SCHEDA CONDIVISA */}
                     {/* <NotaSpeseForm onSuccess={handleClose} schedaId={scheda._id} /> */}
+                </Modal.Body>
+            </Modal>
+
+            <Modal show={modalState.deleteModal} onHide={() => handleClose("deleteModal")}>
+                <Modal.Header closeButton>
+                <Modal.Title><b>Confermi di eliminare la scheda: {scheda.titolo}?</b></Modal.Title>
+                </Modal.Header>
+                <Modal.Body>            
+                    <div className="d-flex gap-5 flex-column">
+                        <Button type="submit" className="btn btn-danger w-100" onClick={() => dispatch(deleteSchedaSpese(scheda._id))}>
+                            Conferma
+                        </Button>
+                        <Button type="submit" className="btn btn-secondary w-100">
+                            Annulla
+                        </Button>
+                    </div>
                 </Modal.Body>
             </Modal>
         </>

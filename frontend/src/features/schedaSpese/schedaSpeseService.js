@@ -43,10 +43,22 @@ const updateSchedaSpese = async (schedaId, schedaData, token) => {
   return response.data
 }
 
+// Delete scheda spese
+const deleteSchedaSpese = async (schedaId, token) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+  const response = await axios.delete(API_URL + schedaId, config)
+  return response.data
+}
+
 const schedaSpeseService = {
   getSchedaSpese,
   createSchedaSpese,
-  updateSchedaSpese
+  updateSchedaSpese,
+  deleteSchedaSpese
 }
 
 export default schedaSpeseService
