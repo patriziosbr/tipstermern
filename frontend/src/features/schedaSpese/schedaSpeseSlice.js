@@ -24,7 +24,7 @@ export const getSchedaSpese = createAsyncThunk(
   }
 );
 
-// Create a new match
+// Create a new SchedaSpese
 export const createSchedaSpese = createAsyncThunk(
   'schedaSpese/create',
   async (schedaSpeseData, thunkAPI) => {
@@ -85,7 +85,7 @@ const schedaSpeseSlice = createSlice({
       .addCase(createSchedaSpese.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
-        state.schedaSpese.push(action.payload);
+        state.schedaSpese.unshift(action.payload); // da rivedere forse meglio fare la get dopo la post 
       })
       .addCase(createSchedaSpese.rejected, (state, action) => {
         state.isLoading = false;

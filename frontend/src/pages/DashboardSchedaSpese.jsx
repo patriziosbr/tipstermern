@@ -15,19 +15,19 @@ function DashboardSchedaSpese() {
     setShow(false); // Reset Redux state when closing the modal
   };
 
-  const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
-    <a
-      href=""
-      ref={ref}
-      onClick={e => {
-        e.preventDefault();
-        onClick(e);
-      }}
-    >
-      {children}
-      <span className="threedots" />
-    </a>
-  ));
+  // const CustomToggle = React.forwardRef(({ children, onClick }, ref) => (
+  //   <a
+  //     href=""
+  //     ref={ref}
+  //     onClick={e => {
+  //       e.preventDefault();
+  //       onClick(e);
+  //     }}
+  //   >
+  //     {children}
+  //     <span className="threedots" />
+  //   </a>
+  // ));
 
   return (
     <>
@@ -39,7 +39,9 @@ function DashboardSchedaSpese() {
           Scheda
         </Button>
       </div>
-      <SchedaSpese />
+
+      <SchedaSpese/>
+      
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title><b>Crea scheda</b></Modal.Title>

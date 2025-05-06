@@ -40,7 +40,6 @@ function SchedaSpeseForm({onSuccess}) {
       dispatch(createSchedaSpese(schedaSpeseFormData))
       .unwrap()
       .then((response) => {
-        console.log("Success Response:", response); // Debugging
         toast.success("Nota spese creata con successo!");
         onSuccess(); 
       })
@@ -66,7 +65,7 @@ function SchedaSpeseForm({onSuccess}) {
             required
           />
         </Form.Group>
-        <Form.Group className="mb-3">
+        {/* <Form.Group className="mb-3">
           <Form.Label>Inserimento Data</Form.Label>
           <Form.Control
             type="date"
@@ -75,7 +74,7 @@ function SchedaSpeseForm({onSuccess}) {
             value={inserimentoData}
             onChange={onChange}
           />
-        </Form.Group>
+        </Form.Group> */}
 
         <Form.Group className="mb-3">
           <Form.Label>Condiviso con</Form.Label>

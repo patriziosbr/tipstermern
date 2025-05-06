@@ -15,17 +15,33 @@ import { getSchedaSpese, updateSchedaSpese } from '../features/schedaSpese/sched
 
 
 function SingleScheda({scheda}) {
-    const [show, setShow] = useState(false);
-    const [showUser, setShowUser] = useState(false);
+    // const [show, setShow] = useState(false);
+    // const [showUser, setShowUser] = useState(false);
+    // const handleShow = (param) => param === "showUser" ? setShowUser(true) : setShow(true);
+    // const handleClose = () => {
+    //     setShow(false); // Reset Redux state when closing the modal
+    // };
 
-    const handleShow = () => setShow(true);
+    const [modalState, setModalState] = useState({
+        showCreaNotaModal: false,
+        showShareModal: false,
+    });
 
-    const handleShow2 = (param) => param === "showUser" ? setShowUser(true) : setShow(true);
-    const handleClose = () => {
-        setShow(false); // Reset Redux state when closing the modal
+    const handleShow = (param) => {
+        setModalState((prevState) => ({
+            ...prevState,
+            [param === "showShare" ? "showShareModal" : "showCreaNotaModal"]: true,
+        }));
     };
-    const [longPressCount, setlongPressCount] = useState(0)
+    
+    const handleClose = (param) => {
+        setModalState((prevState) => ({
+            ...prevState,
+            [param === "hideShare" ? "showShareModal" : "showCreaNotaModal"]: false,
+        }));
+    };
 
+    const [longPressCount, setlongPressCount] = useState(0)
     const [formData, setFormData] = useState({
     titolo: scheda.titolo,
     })
@@ -56,7 +72,6 @@ function SingleScheda({scheda}) {
       ));
       
       const onLongPress = () => {
-        console.log('longpress is triggered');
         setlongPressCount(longPressCount + 1)
       };
 
@@ -68,7 +83,6 @@ function SingleScheda({scheda}) {
 
       const updateSchedataTitolo = async () => {
         const updatePayload = { titolo: titolo };
-        console.log(scheda._id, '--------------scheda'); // Debugging
         
         await dispatch(updateSchedaSpese({ schedaId: scheda._id, ...updatePayload })).unwrap();
         await dispatch(getSchedaSpese()).unwrap();
@@ -79,7 +93,7 @@ function SingleScheda({scheda}) {
         const day = String(date.getUTCDate()).padStart(2, '0'); 
         const month = String(date.getUTCMonth() + 1).padStart(2, '0'); 
         const year = date.getUTCFullYear();
-        const formattedDate = `${day} ${month} ${year}`;
+        const formattedDate = `${day}/${month}/${year}`;
         return formattedDate
     }  
 
@@ -87,7 +101,7 @@ function SingleScheda({scheda}) {
     return (
         <>
             <div className='d-flex justify-content-between align-items-center'>
-                {longPressCount < 1 && <h5 className='mb-0 align-self-center'  {...longPressEvent} >{scheda.titolo}</h5>}
+                {longPressCount < 1 && <h5 role="button" className='mb-0 align-self-center'  {...longPressEvent} >{scheda.titolo}</h5>}
                 {longPressCount > 0 && 
                     <div>
                         <input name="titolo" type='text' value={titolo} onChange={onChange}/> 
@@ -100,22 +114,18 @@ function SingleScheda({scheda}) {
                     <Dropdown.Menu size="sm" title="">
                     <Dropdown.Header>Options</Dropdown.Header>
                     <Dropdown.Item>
-                    <span variant="secondary" className='d-flex align-items-center' onClick={handleShow}>
+                    <span variant="secondary" className='d-flex align-items-center' onClick={()=>handleShow("")}>
                         <FaPlus className="me-2"/>Add nota spese
                     </span>
                     </Dropdown.Item>
                     <Dropdown.Item>
-                    <span variant="secondary" className='d-flex align-items-center' onClick={()=>handleShow2("showUser")}>
+                    <span variant="secondary" className='d-flex align-items-center' onClick={()=>handleShow("showShare")}>
                         <FaUserPlus className="me-2"/>Condividi
                     </span>
                     </Dropdown.Item>
                     <Dropdown.Item>hnjm</Dropdown.Item>
                 </Dropdown.Menu>
                 </Dropdown>
-                {/* <Button variant="link" className='d-flex align-items-center' onClick={handleShow}>
-                    <FaPlus className="me-2"/>
-                    Add nota spese
-                </Button> */}
             </div>
             <div>
                 <Table striped className="mb-5">
@@ -151,7 +161,7 @@ function SingleScheda({scheda}) {
             </Table>
             </div>
 
-            <Modal show={show} onHide={handleClose}>
+            <Modal show={modalState.showCreaNotaModal} onHide={() => handleClose("")}>
                 <Modal.Header closeButton>
                 <Modal.Title><b>Crea Nota in {scheda.titolo}</b></Modal.Title>
                 </Modal.Header>
@@ -159,12 +169,13 @@ function SingleScheda({scheda}) {
                     <NotaSpeseForm onSuccess={handleClose} schedaId={scheda._id} />
                 </Modal.Body>
             </Modal>
-            <Modal show={showUser}  onHide={() => setShowUser(false)}>
+            <Modal show={modalState.showShareModal} onHide={() => handleClose("hideShare")}>
                 <Modal.Header closeButton>
                 <Modal.Title><b>Aggiungi utente in {scheda.titolo}</b></Modal.Title>
                 </Modal.Header>
                 <Modal.Body>            
-                    <NotaSpeseForm onSuccess={handleClose} schedaId={scheda._id} />
+                    {/* TODO SINGLE SCHEDA CONDIVISA */}
+                    {/* <NotaSpeseForm onSuccess={handleClose} schedaId={scheda._id} /> */}
                 </Modal.Body>
             </Modal>
         </>

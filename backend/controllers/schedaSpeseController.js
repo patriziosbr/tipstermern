@@ -2,6 +2,8 @@ const asyncHandler = require('express-async-handler')
 const SchedaSpese = require("../model/schedaSpeseModel")
 const User = require("../model/userModel")
 const NotaSpese = require("../model/notaSpeseModel")
+const nodemailer = require("nodemailer");
+const baseUrl = process.env.NODE_ENV === "development"? process.env.DEV_BASE_URL : process.env.PORDUCTION_BASE_URL; 
 
 //@desc get goals
 //@route GET /api/goals
@@ -32,13 +34,12 @@ const getSchedaSpese = asyncHandler(async (req, res) => {
     res.status(200).json(schedaSpeseWithNota.reverse());
   });
 
-//@desc set goals
-//@route POST /api/goals
+//@desc set schedaSpese
+//@route POST /api/schedaSpese
 //@access Private
 const setSchedaSpese = asyncHandler(async (req, res) => {
     
     if(!req.body.titolo) {
-        // return res.status(400).json({data: "add text in body"}) //soluzione mia con return
         res.status(400)
         throw new Error("add titolo in body") //restituisce l'errore in html per ricevere un json fare middleware 
     }
@@ -50,6 +51,38 @@ const setSchedaSpese = asyncHandler(async (req, res) => {
         condivisoCon: req.body.condivisoCon,
         user: req.user.id
     })
+    console.log(req.body.condivisoCon, '--------------CONDIVISOOO'); // Debugging
+
+    if(req.body.condivisoCon.length > 0) {
+        // Create a test account or replace with real credentials.
+        const transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true, // true for 465, false for other ports
+            auth: {
+                user: "tommasoversetto@gmail.com",
+                pass: "fdhordyppzvvkfaw",
+            },
+        });
+        // Get the sender's full user information to access their email
+        const sender = await User.findById(req.user.id);
+        console.log(sender, '--------------sender'); // Debugging
+
+        try {
+            const info = await transporter.sendMail({
+                from: `${sender.name} <${sender.email}>`,  // Properly formatted sender
+                // to: req.body.condivisoCon.join(','),  // Array of emails joined by commas
+                to: req.body.condivisoCon,  // Array of emails joined by commas
+                subject: "Shared Expense Sheet",
+                text: `An expense sheet "${req.body.titolo}" has been shared with you.`,
+                html: `<b>Registrati: <a href="${baseUrl}/register">Registrati</a><br>Accedi: <a href="${baseUrl}/login">Accedi</a></b>`,
+            });
+            
+            console.log("Message sent:", info.messageId);
+        } catch (error) {
+            console.error("Error sending email:", error);
+        }
+    }
 
     res.status(200).json(notaSpese)
 })
